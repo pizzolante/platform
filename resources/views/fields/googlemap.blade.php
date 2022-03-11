@@ -147,6 +147,10 @@
     infowindowContent.children["place-address"].textContent = place.address;
     infowindow.open(mappa, marker);
 
+    document.getElementsByName("{{$name}}[lat]")[0].value=place.geometry.location.lat();
+    document.getElementsByName("{{$name}}[lng]")[0].value=place.geometry.location.lng();
+;
+
 
     }
 
@@ -159,7 +163,15 @@
 <div data-controller="input"
 data-input-mask="{{$mask ?? ''}}" id="pac-container"
 >
-<input {{ $attributes }} >
+
+@php
+$nfield  = $attributes['name'] . "[nome]";
+$nomeattr = $attributes;
+unset($nomeattr['name']);
+
+@endphp
+
+<input {{ $nomeattr }} name="{{$nfield}}">
 </div>
 
 <div id="mappa"></div>
@@ -167,6 +179,27 @@ data-input-mask="{{$mask ?? ''}}" id="pac-container"
   <img src="" width="16" height="16" id="place-icon" />
   <span id="place-name" class="title"></span><br />
   <span id="place-address"></span>
+</div>
+<div class="row mt-2">
+  <div class="col-md">
+      <label for="{{$name}}[lat]">{{ __('Latitude') }}</label>
+      <input class="form-control"
+             id="marker__latitude"
+             data-map-target="lat"
+             @if($required ?? false) required @endif
+             name="{{$name}}[lat]"
+             value="{{ $value['lat'] ?? '' }}"/>
+  </div>
+  <div class="col-md">
+      <label for="{{$name}}[lng]">{{ __('Longitude') }}</label>
+      <input class="form-control"
+             id="marker__longitude"
+
+             data-map-target="lng"
+             @if($required ?? false) required @endif
+             name="{{$name}}[lng]"
+             value="{{ $value['lng'] ?? '' }}"/>
+  </div>
 </div>
 
 @endcomponent
