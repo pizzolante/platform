@@ -170,8 +170,7 @@ $nomeattr = $attributes;
 unset($nomeattr['name']);
 
 @endphp
-
-<input {{ $nomeattr }} name="{{$nfield}}">
+<input {{ $nomeattr }} name="{{$nfield}}" value="{{ $value['nome'] ?? '' }}" data-map-target="nome">
 </div>
 
 <div id="mappa"></div>

@@ -73,7 +73,7 @@ class GoogleMap extends Field
         'step',
         'tabindex',
         'type',
-        'value',
+        // 'value',
         'mask',
     ];
 
