@@ -35,7 +35,8 @@ class LayoutTest extends TestUnitCase
 
     public function testCanSeeLayout(): void
     {
-        $layout = new class() extends Layout {
+        $layout = new class() extends Layout
+        {
             /***
              * @return bool
              */
@@ -45,8 +46,6 @@ class LayoutTest extends TestUnitCase
             }
 
             /**
-             * @param Repository $repository
-             *
              * @return mixed
              */
             public function build(Repository $repository)

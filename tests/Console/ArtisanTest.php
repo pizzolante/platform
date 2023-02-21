@@ -4,71 +4,40 @@ declare(strict_types=1);
 
 namespace Orchid\Tests\Console;
 
+use Generator;
+use Illuminate\Support\Str;
 use Orchid\Platform\Models\User;
 use Orchid\Support\Facades\Dashboard;
 use Orchid\Tests\TestConsoleCase;
 
 class ArtisanTest extends TestConsoleCase
 {
+    public function artisanOrchidMake(): Generator
+    {
+        yield ['Chart', 'orchid:chart', 'Orchid/Layouts/'];
+        yield ['Table', 'orchid:table', 'Orchid/Layouts/'];
+        yield ['Rows', 'orchid:rows', 'Orchid/Layouts/'];
+        yield ['Selection', 'orchid:selection', 'Orchid/Layouts/'];
+        yield ['Listener', 'orchid:listener', 'Orchid/Layouts/'];
+        yield ['TabMenu', 'orchid:tab-menu', 'Orchid/Layouts/'];
+
+        yield ['Presenter', 'orchid:presenter', 'Orchid/Presenters/'];
+        yield ['Screen', 'orchid:screen', 'Orchid/Screens/'];
+        yield ['Filter', 'orchid:filter', 'Orchid/Filters/'];
+    }
+
     /**
-     * debug: php vendor/bin/phpunit  --filter= ArtisanTest tests\\Feature\\ArtisanTest --debug.
-     *
-     * @var
+     * @dataProvider artisanOrchidMake
      */
-    public function testArtisanOrchidChart(): void
+    public function testArtisanOrchidMake(string $name, string $command, string $path): void
     {
-        $this->artisan('orchid:chart', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutput('Chart created successfully.')
-            ->assertExitCode(0);
-    }
+        $file = Str::random();
 
-    public function testArtisanOrchidTable(): void
-    {
-        $this->artisan('orchid:table', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutput('Table created successfully.')
-            ->assertExitCode(0);
-    }
+        $this->artisan($command, ['name' => $file])
+            ->expectsOutputToContain($name)
+            ->assertOk();
 
-    public function testArtisanOrchidScreen(): void
-    {
-        $this->artisan('orchid:screen', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutput('Screen created successfully.')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidRows(): void
-    {
-        $this->artisan('orchid:rows', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutput('Rows created successfully.')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidFilter(): void
-    {
-        $this->artisan('orchid:filter', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutput('Filter created successfully.')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidSelection(): void
-    {
-        $this->artisan('orchid:selection', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutput('Selection created successfully.')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidListener(): void
-    {
-        $this->artisan('orchid:listener', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutput('Listener created successfully.')
-            ->assertExitCode(0);
-    }
-
-    public function testArtisanOrchidPresenter(): void
-    {
-        $this->artisan('orchid:presenter', ['name' => $this->generateNameFromMethod()])
-            ->expectsOutput('Presenter created successfully.')
-            ->assertExitCode(0);
+        $this->assertFileExists(app_path($path.$file.'.php'));
     }
 
     public function testArtisanOrchidAdmin(): void
@@ -77,13 +46,13 @@ class ArtisanTest extends TestConsoleCase
             ->expectsQuestion('What is your name?', 'testConsoleCreateUser')
             ->expectsQuestion('What is your email?', 'testConsoleCreateUser@console.loc')
             ->expectsQuestion('What is the password?', 'testConsoleCreateUser')
-            ->expectsOutput('User created successfully.');
+            ->expectsOutputToContain('User created successfully.');
 
         $this->artisan('orchid:admin')
             ->expectsQuestion('What is your name?', 'testConsoleCreateUser')
             ->expectsQuestion('What is your email?', 'testConsoleCreateUser@console.loc')
             ->expectsQuestion('What is the password?', 'testConsoleCreateUser')
-            ->expectsOutput('User exist');
+            ->expectsOutputToContain('User exist');
 
         $user = User::factory()->create([
             'permissions' => [],
@@ -92,7 +61,7 @@ class ArtisanTest extends TestConsoleCase
         $this->assertEquals([], $user->permissions);
 
         $this->artisan('orchid:admin', ['--id' => $user->id])
-            ->expectsOutput('User permissions updated.');
+            ->expectsOutputToContain('User permissions updated.');
 
         $user->refresh();
 
@@ -102,12 +71,13 @@ class ArtisanTest extends TestConsoleCase
     public function testArtisanOrchidInstall(): void
     {
         $this->artisan('orchid:install')
-            ->expectsOutput("To start the embedded server, run 'artisan serve'");
+            ->expectsOutputToContain("To start the embedded server, run 'artisan serve'")
+            ->assertOk();
     }
 
     public function testArtisanOrchidLink(): void
     {
         $this->artisan('orchid:publish')
-            ->assertExitCode(0);
+            ->assertOk();
     }
 }

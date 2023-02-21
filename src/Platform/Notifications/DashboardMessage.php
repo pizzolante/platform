@@ -28,13 +28,11 @@ class DashboardMessage extends DatabaseMessage
         $this->data['time'] = Carbon::now();
 
         if (empty($this->data['type'])) {
-            $this->data['type'] = Color::INFO();
+            $this->data['type'] = Color::INFO;
         }
     }
 
     /**
-     * @param string $title
-     *
      * @return $this
      */
     public function title(string $title): self
@@ -45,8 +43,6 @@ class DashboardMessage extends DatabaseMessage
     }
 
     /**
-     * @param string $title
-     *
      * @return $this
      */
     public function message(string $title): self
@@ -57,8 +53,6 @@ class DashboardMessage extends DatabaseMessage
     }
 
     /**
-     * @param string $action
-     *
      * @return $this
      */
     public function action(string $action): self
@@ -69,13 +63,11 @@ class DashboardMessage extends DatabaseMessage
     }
 
     /**
-     * @param Color $color
-     *
      * @return $this
      */
     public function type(Color $color): self
     {
-        $this->data['type'] = (string) $color;
+        $this->data['type'] = $color->name();
 
         return $this;
     }

@@ -12,7 +12,8 @@ class ChartTest extends TestUnitCase
 {
     public function testDisabledExportButton(): void
     {
-        $layout = new class extends Chart {
+        $layout = new class extends Chart
+        {
             /**
              * @var string
              */
@@ -36,7 +37,8 @@ class ChartTest extends TestUnitCase
 
     public function testEnabledExportButton(): void
     {
-        $layout = new class extends Chart {
+        $layout = new class extends Chart
+        {
             /**
              * @var string
              */
@@ -51,9 +53,6 @@ class ChartTest extends TestUnitCase
         $this->assertStringContainsString('Export', $html);
     }
 
-    /**
-     * @return Repository
-     */
     protected function getRepository(): Repository
     {
         return new Repository([

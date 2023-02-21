@@ -18,7 +18,7 @@ use Orchid\Support\Facades\Toast;
 class UserListScreen extends Screen
 {
     /**
-     * Query data.
+     * Fetch data to be displayed on the screen.
      *
      * @return array
      */
@@ -26,36 +26,28 @@ class UserListScreen extends Screen
     {
         return [
             'users' => User::with('roles')
-                ->filters()
-                ->filtersApplySelection(UserFiltersLayout::class)
+                ->filters(UserFiltersLayout::class)
                 ->defaultSort('id', 'desc')
                 ->paginate(),
         ];
     }
 
     /**
-     * Display header name.
-     *
-     * @return string|null
+     * The name of the screen displayed in the header.
      */
     public function name(): ?string
     {
-        return 'User';
+        return 'User Management';
     }
 
     /**
      * Display header description.
-     *
-     * @return string|null
      */
     public function description(): ?string
     {
-        return 'All registered users';
+        return 'A comprehensive list of all registered users, including their profiles and privileges.';
     }
 
-    /**
-     * @return iterable|null
-     */
     public function permission(): ?iterable
     {
         return [
@@ -64,7 +56,7 @@ class UserListScreen extends Screen
     }
 
     /**
-     * Button commands.
+     * The screen's action buttons.
      *
      * @return \Orchid\Screen\Action[]
      */
@@ -72,13 +64,13 @@ class UserListScreen extends Screen
     {
         return [
             Link::make(__('Add'))
-                ->icon('plus')
+                ->icon('bs.plus-circle')
                 ->route('platform.systems.users.create'),
         ];
     }
 
     /**
-     * Views.
+     * The screen's layout elements.
      *
      * @return string[]|\Orchid\Screen\Layout[]
      */
@@ -94,8 +86,6 @@ class UserListScreen extends Screen
     }
 
     /**
-     * @param User $user
-     *
      * @return array
      */
     public function asyncGetUser(User $user): iterable
@@ -105,16 +95,12 @@ class UserListScreen extends Screen
         ];
     }
 
-    /**
-     * @param Request $request
-     * @param User    $user
-     */
     public function saveUser(Request $request, User $user): void
     {
         $request->validate([
             'user.email' => [
                 'required',
-                Rule::unique(User::class, 'slug')->ignore($user),
+                Rule::unique(User::class, 'email')->ignore($user),
             ],
         ]);
 
@@ -123,9 +109,6 @@ class UserListScreen extends Screen
         Toast::info(__('User was saved.'));
     }
 
-    /**
-     * @param Request $request
-     */
     public function remove(Request $request): void
     {
         User::findOrFail($request->get('id'))->delete();

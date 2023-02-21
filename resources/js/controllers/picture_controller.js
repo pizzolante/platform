@@ -52,6 +52,7 @@ export default class extends ApplicationController {
             formData.append('file', event.target.files[0]);
             formData.append('storage', this.data.get('storage'));
             formData.append('group', this.data.get('groups'));
+            formData.append('path', this.data.get('path'));
             formData.append('acceptedFiles', this.data.get('accepted-files'));
 
             let element = this.element;
@@ -67,8 +68,6 @@ export default class extends ApplicationController {
 
                     // add event for listener
                     element.querySelector('.picture-path').dispatchEvent(new Event("change"));
-
-                    $(element.querySelector('.modal')).modal('hide');
                 })
                 .catch((error) => {
                     this.alert('Validation error', 'File upload error');

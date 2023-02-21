@@ -14,8 +14,6 @@ use Orchid\Platform\Http\Requests\RelationRequest;
 class RelationController extends Controller
 {
     /**
-     * @param RelationRequest $request
-     *
      * @return JsonResponse
      */
     public function view(RelationRequest $request)
@@ -42,6 +40,7 @@ class RelationController extends Controller
             });
 
         /** @var Model $model */
+        /** @psalm-suppress UndefinedClass */
         $model = new $model;
         $search = $request->get('search', '');
 
@@ -51,26 +50,17 @@ class RelationController extends Controller
     }
 
     /**
-     * @param Model       $model
-     * @param string      $name
-     * @param string      $key
-     * @param string|null $search
-     * @param array|null  $scope
-     * @param string|null $append
-     * @param array|null  $searchColumns
-     * @param int|null    $chunk
-     *
      * @return mixed
      */
     private function buildersItems(
-        Model   $model,
-        string  $name,
-        string  $key,
-        string  $search = null,
-        ?array  $scope = [],
+        Model $model,
+        string $name,
+        string $key,
+        string $search = null,
+        ?array $scope = [],
         ?string $append = null,
-        ?array  $searchColumns = null,
-        ?int    $chunk = 10
+        ?array $searchColumns = null,
+        ?int $chunk = 10
     ) {
         if ($scope !== null) {
             /** @var Collection|array $model */

@@ -18,9 +18,10 @@ class BaseFieldTest extends TestFieldsUnitCase
      */
     public $field;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $field = new class extends Field {
+        $field = new class extends Field
+        {
             /**
              * @var string
              */

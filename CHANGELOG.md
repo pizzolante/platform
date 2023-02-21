@@ -5,29 +5,387 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## 12.1.0 - 2022-02-14
+## 13.10.0 - 2023-02-14
+
+### Added
+
+- Implemented a new page when you introduce yourself as a user who has no permission
+- Added view for indicator need update assets 
+- Added `disableMobile()` for DateRange [#2522](https://github.com/orchidsoftware/platform/pull/2522)
+
+### Changed
+
+- The class `UserSwitch` has been declared obsolete and the preference is to use `Impersonation` instead.
+- Vertical align for column titles
+
+### Fixed
+
+- Disable client-side filtering [#2512](https://github.com/orchidsoftware/platform/issues/2512)
+- Show icons for Notification/Table
+
+## 13.9.4 - 2023-01-13
+
+### Fixed 
+- Implicit model binding with Screen query type hinting fails [#2472](https://github.com/orchidsoftware/platform/issues/2472), [#2339](https://github.com/orchidsoftware/platform/pull/2339)
+- Find duplicate for layouts [#2500](https://github.com/orchidsoftware/platform/issues/2500)
+
+
+## 13.9.3 - 2023-01-11
+
+### Fixed
+
+- Error when including more than one listener in the same screen [#2489](https://github.com/orchidsoftware/platform/issues/2489)
+
+## 13.9.2 - 2023-01-11
+
+### Fixed
+
+- Both filter date range and input not working [#2473](https://github.com/orchidsoftware/platform/issues/2473)
+- Hidden calendar popover when open in dropdown
+
+## 13.9.1 - 2022-12-25
+
+### Changed
+
+- Arabic translation [#2477](https://github.com/orchidsoftware/platform/pull/2477)
+- Max options for `Select` [#2478](https://github.com/orchidsoftware/platform/pull/2477)
+
+## 13.9.0 - 2022-12-16
+
+### Added
+
+- Method for determine published assets are up-to-date
+
+### Changed
+
+- Comments for `stubs` class
+- Available to filter attachments in media by group [#2451](https://github.com/orchidsoftware/platform/pull/2451)
+
+### Fixed
+
+- Pagination in tabs [#2444](https://github.com/orchidsoftware/platform/pull/2444)
+- Padding for start `Alerts` message
+- Eager loading for the Relation field [#2475](https://github.com/orchidsoftware/platform/issues/2475)
+
+## 13.8.0 - 2022-11-19
 
 ## Added
+
+- Send non-target extra variables to Listener's asyncMethod [#2412](https://github.com/orchidsoftware/platform/pull/2412)
+
+## Fixed
+
+- Update and fix French translation file [#2440](https://github.com/orchidsoftware/platform/pull/2440)
+- Map field The map does not send a change event
+
+## 13.7.1 - 2022-10-31
+
+### Fixed
+
+- Do not process the visual value of the filter when the parameter is missing
+
+## 13.7.0 - 2022-10-27
+
+### Added
+
+- Add display custom filter value [#2416](https://github.com/orchidsoftware/platform/pull/2416)
+
+### Changed
+
+- Usage arrow functions [#2415](https://github.com/orchidsoftware/platform/pull/2415)
+- Usage PHP 8 functions
+
+### Fixed
+
+- Align icons filter for `Selection`
+
+## 13.6.1 - 2022-10-21
+
+### Changed
+
+- Better performance icons loader [#2410](https://github.com/orchidsoftware/platform/issues/2410)
+
+## 13.6.0 - 2022-10-09
+
+### Added
+
+- Usage Laravel Pint for code style [#2397](https://github.com/orchidsoftware/platform/pull/2397)
+- Hebrew translation [#2393](https://github.com/orchidsoftware/platform/pull/2393)
+
+### Changed
+
+- Value of select to not use a strict type
+- Better example charts [#2379](https://github.com/orchidsoftware/platform/issues/2379)
+
+### Fixed
+
+- Nullable checkbox element [2298](https://github.com/orchidsoftware/platform/issues/2298)
+
+## 13.5.0 - 2022-10-02
+
+### Added
+
+- Added attribute `inputmode` for input tag [#2390](https://github.com/orchidsoftware/platform/pull/2390)
+
+## 13.4.0 - 2022-09-27
+
+### Added
+
+- Using charts as templates [#2379](https://github.com/orchidsoftware/platform/issues/2379)
+
+## 13.3.0 - 2022-09-19
+
+### Added
+
+- Added `unaccessed` method to Screen [#2374](https://github.com/orchidsoftware/platform/pull/2374)
+
+### Fixed
+
+- Missing variable to select TimeZone
+
+## 13.2.0 - 2022-09-11
+
+### Added
+
+- Select field option that will allow users to add values [#2342](https://github.com/orchidsoftware/platform/pull/2342)
+
+### Changed
+
+- Avatar and cells now have a minimum width
+- Removed authorize method for relation request [#2362](https://github.com/orchidsoftware/platform/issues/2362)
+
+### Fixed
+
+- Using filters with parameters [#2361](https://github.com/orchidsoftware/platform/issues/2361)
+- Set default storage from config [#2330](https://github.com/orchidsoftware/platform/pull/2330)
+- Don't overwrite radio value [#2348](https://github.com/orchidsoftware/platform/pull/2348)
+
+## 13.1.0 - 2022-08-05
+
+### Added
+
+- Localization for the notice displayed before impersonating a user [#2318](https://github.com/orchidsoftware/platform/pull/2318)
+- Anonymous components [#2325](https://github.com/orchidsoftware/platform/pull/2325) [#2324](https://github.com/orchidsoftware/platform/issues/2324)
+- Allow customizing path for uploads fields [#2316](https://github.com/orchidsoftware/platform/pull/2316)
+
+### Changed
+
+- Long text metrics view [#2327](https://github.com/orchidsoftware/platform/pull/2327)
+
+## 13.0.2 - 2022-07-26
+
+### Fixed
+
+- Fix for Nested sub menus in the Sidebar. [#2304](https://github.com/orchidsoftware/platform/pull/2304)
+- Select and Relation fields visual issues for relations with model [#2312](https://github.com/orchidsoftware/platform/issues/2312)
+
+## 13.0.1 - 2022-07-22
+
+### Fixed
+
+- Revert usage bootstrap version
+
+## 13.0.0 - 2022-07-22
+
+## Added
+
+- Preset filters
+- Global variable `window.Bootstrap` [#2307](https://github.com/orchidsoftware/platform/issues/2307)
+- Method `withoutEscaping` for `Alert/Toast` [#2290](https://github.com/orchidsoftware/platform/issues/2290)
+
+### Changed
+
+- Allow `html` messages in notifications [#2290](https://github.com/orchidsoftware/platform/issues/2290)
+- Don't use `jQuery` and packages that depend on it. [#2292](https://github.com/orchidsoftware/platform/issues/2292)
+- Change default `platform.php` file to prevent log warnings with `PHP 8.1` [#2305](https://github.com/orchidsoftware/platform/pull/2305)
+- Allow setting `NULL` value for `Select` and `Relation` fields when cleared [#2300](https://github.com/orchidsoftware/platform/pull/2300)
+
+### Removed
+
+- `jQuery` and `Select2` packages [#2292](https://github.com/orchidsoftware/platform/issues/2292)
+
+### Deprecated
+
+- Using automatic filters in a model without specifying its type
+
+## 12.6.2 - 2022-06-16
+
+### Changed
+
+- Add space between commands [#2238](https://github.com/orchidsoftware/platform/pull/2238)
+
+### Fixed
+
+- Compile resources webpack errors [#2267](https://github.com/orchidsoftware/platform/issues/2267)
+- Duplicate result for open attachments catalog [#2266](https://github.com/orchidsoftware/platform/issues/2266)
+
+## 12.6.1 - 2022-06-09
+
+### Fixed
+
+- Added filter triggering when pressing enter [#2260](https://github.com/orchidsoftware/platform/pull/2260)
+- Add margin to items in command bar [#2262](https://github.com/orchidsoftware/platform/pull/2262)
+
+## 12.6.0 - 2022-06-01
+
+### Added
+
+- Group filter to get permissions (#2253)
+- `TabMenu` layout
+
+
+## 12.5.0 - 2022-05-21
+
+### Added
+
+- Turkmen language [#2244](https://github.com/orchidsoftware/platform/pull/2244)
+
+### Changed
+
+- Increase the height of charts in examples
+- Removed jQuery from `map_controller`, `upload_controller` [#2246](https://github.com/orchidsoftware/platform/pull/2246)
+
+### Fixed
+
+- Filling in a password when creating a user [#2249](https://github.com/orchidsoftware/platform/pull/2249)
+- Upload description target [#2248](https://github.com/orchidsoftware/platform/pull/2248)
+
+## 12.4.5 - 2022-05-19
+
+### Changed
+
+- Added indicator for validation fields for submit form
+- Make more padding for layer titles
+- Changed border values
+
+### Fixed
+
+- Show close button datetime
+
+## 12.4.4 - 2022-05-15
+
+### Fixed
+
+- Cannot Add a role to a user (new or existing user) [#2235](https://github.com/orchidsoftware/platform/issues/2235)
+
+## 12.4.3 - 2022-05-15
+
+### Changed
+
+- Allow `checkAccess` method to be overridden [#2188](https://github.com/orchidsoftware/platform/issues/2188)
+
+### Fixed
+
+- Method `open` for modals [#2240](https://github.com/orchidsoftware/platform/pull/2240)
+
+## 12.4.2 - 2022-05-15
+
+### Changed
+
+- Complete persian translations [#2239](https://github.com/orchidsoftware/platform/pull/2239)
+
+### Fixed
+
+- Update deprecated stimulus controllers
+- Select2 adding dir option [#2222](https://github.com/orchidsoftware/platform/pull/2222)
+
+## 12.4.1 - 2022-05-02
+
+### Fixed
+
+- Correct some translations [#2220](https://github.com/orchidsoftware/platform/pull/2220)
+- Reset select 2 position in RTL [#2219](https://github.com/orchidsoftware/platform/pull/2219)
+
+## 12.4.0 - 2022-04-25
+
+### Added
+
+- Second $loop parameter to the closure function [#2211](https://github.com/orchidsoftware/platform/pull/2211)
+- Attribute groups to Quill [#2209](https://github.com/orchidsoftware/platform/pull/2209)
+
+## 12.3.2 - 2022-04-20
+
+### Changed
+
+- Don't create a directory manually [#2193](https://github.com/orchidsoftware/platform/issues/2193)
+- Reduced dependency on third party libraries
+- Position for toast on mobile
+
+## 12.3.1 - 2022-04-20
+
+### Changed
+
+- Update German translation [#2196](https://github.com/orchidsoftware/platform/pull/2196) and [#2201](https://github.com/orchidsoftware/platform/pull/2201)
+
+### Fixed
+
+- Group database field not being generated when using Cropper element [#2202](https://github.com/orchidsoftware/platform/pull/2202)
+
+## 12.3.0 - 2022-03-26
+
+### Added
+
+- Custom storage path feature [#2189](https://github.com/orchidsoftware/platform/pull/2189)
+- Allow duplicate files [#2168](https://github.com/orchidsoftware/platform/pull/2168)
+
+### Fixed
+
+- Long subtitle by default [#2107](https://github.com/orchidsoftware/platform/issues/2107)
+
+## 12.2.2 - 2022-03-23
+
+### Fixed
+
+- Matrix add row method [#2170](https://github.com/orchidsoftware/platform/pull/2170)
+- Usage `formnovalidate` button attributes
+
+## 12.2.1 - 2022-03-08
+
+### Fixed
+
+- Using an alias to group and sort for `Chartable`
+
+## 12.2.0 - 2022-03-05
+
+### Added
+
+- Support RTL [#1397](https://github.com/orchidsoftware/platform/issues/1397) [#2155](https://github.com/orchidsoftware/platform/pull/2155)
+- Added toolbar color for iOS
+- Smooth Page Refresh for PWA (Including iOS)
+
+### Changed
+
+- Increasing the font size
+- Added\Edit some missing keys in `it` translation [#2165](https://github.com/orchidsoftware/platform/pull/2165)
+
+### Fixed
+
+- Toast notifications on bootstrap 5
+- Update default validation [#2164](https://github.com/orchidsoftware/platform/pull/2164)
+
+## 12.1.0 - 2022-02-14
+
+### Added
 
 - Traditional Chinese language [#2127](https://github.com/orchidsoftware/platform/pull/2127)
 - Ability to override default view [#2126](https://github.com/orchidsoftware/platform/pull/2126)
 - Allow base64 files for Quill [#2130](https://github.com/orchidsoftware/platform/pull/2130)
 
-## Changed
+### Changed
 
 - Remove single quote in the example route [#2118](https://github.com/orchidsoftware/platform/pull/2118)
 
-## Fixed
+### Fixed
 
 - Method called twice in html_load controller [#2095](https://github.com/orchidsoftware/platform/issues/2095)
 - hasOwnProperty dot path [#2132](https://github.com/orchidsoftware/platform/pull/2132)
 
 ## 12.0.0 - 2022-02-10
 
-## Added
+### Added
 - Support Laravel 9.x
 
-## Removed
+### Removed
 - Support Laravel 8.x
 - Support Laravel Scout 8.x
 
@@ -39,7 +397,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 11.0.0 - 2022-02-06
 
-## Added 
+### Added 
 
 - Automatic parameter prediction in components [#1961](https://github.com/orchidsoftware/platform/issues/1961)
 - Component value [#1962](https://github.com/orchidsoftware/platform/issues/1962)

@@ -24,10 +24,16 @@ class AttachmentTest extends TestUnitCase
      */
     protected $disk;
 
+    /**
+     * @var string
+     */
+    protected $path;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->disk = 'public';
+        $this->path = '/test';
     }
 
     public function testAttachmentFile(): void
@@ -73,6 +79,30 @@ class AttachmentTest extends TestUnitCase
 
         $this->assertStringContainsString($path, $upload->physicalPath());
         $this->assertStringContainsString('/storage/'.$path, $upload->url());
+    }
+
+    public function testAttachmentCustomPath(): void
+    {
+        $file = UploadedFile::fake()->create('document.xml', 200);
+        $attachment = new File($file, $this->disk);
+
+        /** @var Attachment $upload */
+        $upload = $attachment->path($this->path)->load();
+
+        $this->assertEquals([
+            'size' => $file->getSize(),
+            'name' => $file->name,
+        ], [
+            'size' => $upload->size,
+            'name' => $upload->original_name,
+        ]);
+
+        $this->assertTrue(Storage::disk($this->disk)->exists($upload->physicalPath()));
+
+        $path = $this->path.'/'.$upload->name.'.xml';
+
+        $this->assertStringContainsString($path, $upload->physicalPath());
+        $this->assertStringContainsString($path, $upload->url());
     }
 
     public function testAttachmentImage(): void
@@ -151,6 +181,21 @@ class AttachmentTest extends TestUnitCase
         $this->assertNotNull($clone->url());
     }
 
+    public function testAttachmentUploadAllowingDuplicate(): void
+    {
+        $file = UploadedFile::fake()->create('duplicate.jpg');
+        $clone = clone $file;
+
+        $upload = (new File($file, $this->disk))->load();
+        $clone = (new File($clone, $this->disk))->allowDuplicates()->load();
+
+        $this->assertNotEquals($upload->url(), $clone->url());
+        $this->assertNotEquals($upload->id, $clone->id);
+
+        $upload->delete();
+        $this->assertNotNull($clone->url());
+    }
+
     public function testUnknownMimeTypeAttachmentUpload(): void
     {
         $file = UploadedFile::fake()->create('duplicate.gyhkjfewfowejg');
@@ -187,7 +232,8 @@ class AttachmentTest extends TestUnitCase
         $file = UploadedFile::fake()->create('relations');
         $upload = (new File($file, $this->disk))->load();
 
-        $model = new class extends Model {
+        $model = new class extends Model
+        {
             use Attachable;
         };
 

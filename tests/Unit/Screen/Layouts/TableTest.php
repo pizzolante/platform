@@ -6,6 +6,7 @@ namespace Orchid\Tests\Unit\Screen\Layouts;
 
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\Repository;
+use Orchid\Screen\TD;
 use Orchid\Tests\App\Layouts\TotalTable;
 use Orchid\Tests\TestUnitCase;
 
@@ -26,7 +27,8 @@ class TableTest extends TestUnitCase
 
     public function testCanSee(): void
     {
-        $layout = new class extends Table {
+        $layout = new class extends Table
+        {
             protected $target = 'target';
 
             protected function columns(): array
@@ -57,7 +59,8 @@ class TableTest extends TestUnitCase
 
     public function testStriped(): void
     {
-        $layout = new class extends Table {
+        $layout = new class extends Table
+        {
             protected $target = 'target';
 
             protected function columns(): array
@@ -80,7 +83,8 @@ class TableTest extends TestUnitCase
 
     public function testBordered(): void
     {
-        $layout = new class extends Table {
+        $layout = new class extends Table
+        {
             protected $target = 'target';
 
             protected function columns(): array
@@ -103,7 +107,8 @@ class TableTest extends TestUnitCase
 
     public function testHoverable(): void
     {
-        $layout = new class extends Table {
+        $layout = new class extends Table
+        {
             protected $target = 'target';
 
             protected function columns(): array
@@ -126,7 +131,8 @@ class TableTest extends TestUnitCase
 
     public function testShowTextNotFoundWhenTargetIsEmptyCollection()
     {
-        $layout = new class extends Table {
+        $layout = new class extends Table
+        {
             protected $target = 'target';
 
             protected function columns(): array
@@ -139,7 +145,32 @@ class TableTest extends TestUnitCase
             'target'  => collect([]),
         ]))->render();
 
-        $this->assertStringContainsString('There are no records in this view', $html);
+        $this->assertStringContainsString('There are no objects currently displayed', $html);
         $this->assertNotEmpty($html);
+    }
+
+    public function testLoopTable(): void
+    {
+        $layout = new class extends Table
+        {
+            protected $target = 'target';
+
+            protected function columns(): array
+            {
+                return [
+                    TD::make('serial number')->render(fn ($item, $loop) => 'index:'.$loop->index),
+                ];
+            }
+        };
+
+        $values = collect(['a', 'b', 'c']);
+
+        $html = $layout->build(new Repository([
+            'target'  => $values,
+        ]))->render();
+
+        $values->each(function ($item, $key) use ($html) {
+            $this->assertStringContainsString('index:'.$key, $html);
+        });
     }
 }

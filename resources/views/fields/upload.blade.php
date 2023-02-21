@@ -1,7 +1,7 @@
 @component($typeForm, get_defined_vars())
     <div
         data-controller="upload"
-        data-upload-storage="{{$storage ?? 'public'}}"
+        data-upload-storage="{{$storage ?? config('platform.attachment.disk', 'public')}}"
         data-upload-name="{{$name}}"
         data-upload-id="dropzone-{{$id}}"
         data-upload-data='@json($value)'
@@ -17,6 +17,7 @@
         data-upload-is-media-library="{{ $media }}"
         data-upload-close-on-add="{{ $closeOnAdd }}"
         data-upload-resize-height="{{$resizeHeight }}"
+        data-upload-path="{{ $attributes['path'] ?? '' }}"
     >
         <div id="dropzone-{{$id}}" class="dropzone-wrapper">
             <div class="fallback">
@@ -26,9 +27,9 @@
                 <div class="dz-message dz-preview dz-processing dz-image-preview">
                     <div class="bg-light d-flex justify-content-center align-items-center border r-2x"
                          style="min-height: 112px;">
-                        <div class="pe-1 ps-1 pt-3 pb-3">
-                            <x-orchid-icon path="cloud-upload" class="h3"/>
-                            <small class="text-muted w-b-k d-block">{{__('Upload file')}}</small>
+                        <div class="px-2 py-4">
+                            <x-orchid-icon path="bs.cloud-arrow-up" class="h3"/>
+                            <small class="text-muted d-block mt-1">{{__('Upload file')}}</small>
                         </div>
                     </div>
                 </div>
@@ -38,10 +39,10 @@
                          data-action="click->upload#openMedia">
                         <div class="bg-light d-flex justify-content-center align-items-center border r-2x"
                              style="min-height: 112px;">
-                            <div class="pe-1 ps-1 pt-3 pb-3">
-                                <x-orchid-icon path="open" class="h3"/>
+                            <div class="px-2 py-4">
+                                <x-orchid-icon path="bs.collection" class="h3"/>
 
-                                <small class="text-muted w-b-k d-block">{{__('Media catalog')}}</small>
+                                <small class="text-muted d-block mt-1">{{__('Media catalog')}}</small>
                             </div>
                         </div>
                     </div>
@@ -64,23 +65,23 @@
                         <div class="modal-body p-4">
                             <div class="form-group">
                                 <label>{{__('System name')}}</label>
-                                <input type="text" class="form-control" data-target="upload.name" readonly
+                                <input type="text" class="form-control" data-upload-target="name" readonly
                                        maxlength="255">
                             </div>
                             <div class="form-group">
                                 <label>{{ __('Display name') }}</label>
-                                <input type="text" class="form-control" data-target="upload.original"
+                                <input type="text" class="form-control" data-upload-target="original"
                                        maxlength="255" placeholder="{{ __('Display name') }}">
                             </div>
                             <div class="form-group">
                                 <label>{{ __('Alternative text') }}</label>
-                                <input type="text" class="form-control" data-target="upload.alt"
+                                <input type="text" class="form-control" data-upload-target="alt"
                                        maxlength="255" placeholder="{{  __('Alternative text')  }}">
                             </div>
                             <div class="form-group">
                                 <label>{{ __('Description') }}</label>
                                 <textarea class="form-control no-resize"
-                                          data-target="upload.description"
+                                          data-upload-target="description"
                                           placeholder="{{ __('Description') }}"
                                           maxlength="255"
                                           rows="3"></textarea>
@@ -91,7 +92,7 @@
                                 <div class="form-group">
                                     <a href="#" data-action="click->upload#openLink">
                                         <small>
-                                            <x-orchid-icon path="link" class="me-2"/>
+                                            <x-orchid-icon path="bs.share" class="me-2"/>
 
                                             {{ __('Link to file') }}
                                         </small>
@@ -138,7 +139,7 @@
                                         <div class="form-group">
                                             <label>{{__('Search file')}}</label>
                                             <input type="search"
-                                                   data-target="upload.search"
+                                                   data-upload-target="search"
                                                    data-action="keydown->upload#resetPage keydown->upload#loadMedia"
                                                    class="form-control"
                                                    placeholder="{{ __('Search...') }}"
@@ -181,7 +182,7 @@
 
             <template id="dropzone-{{$id}}-edit-button">
                 <a href="javascript:;" class="btn-edit">
-                    <x-orchid-icon path="note" class="mb-1"/>
+                    <x-orchid-icon path="bs.card-text" class="mb-1"/>
                 </a>
             </template>
 

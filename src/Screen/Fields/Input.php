@@ -41,6 +41,7 @@ use Orchid\Screen\Field;
  * @method Input popover(string $value = null)
  * @method Input mask($value = true)
  * @method Input title(string $value = null)
+ * @method Input inputmode(string $value = null)
  */
 class Input extends Field
 {
@@ -96,6 +97,7 @@ class Input extends Field
         'type',
         'value',
         'mask',
+        'inputmode',
     ];
 
     /**
@@ -112,11 +114,6 @@ class Input extends Field
         });
     }
 
-    /**
-     * @param array $datalist
-     *
-     * @return Input
-     */
     public function datalist(array $datalist = []): self
     {
         if (empty($datalist)) {

@@ -20,7 +20,7 @@ class RolePermissionLayout extends Rows
     private $user;
 
     /**
-     * Views.
+     * The screen's layout elements.
      *
      * @throws Throwable
      *
@@ -35,52 +35,28 @@ class RolePermissionLayout extends Rows
         );
     }
 
-    /**
-     * @param Collection $permissionsRaw
-     *
-     * @return array
-     */
     private function generatedPermissionFields(Collection $permissionsRaw): array
     {
         return $permissionsRaw
-            ->map(function (Collection $permissions, $title) {
-                return $this->makeCheckBoxGroup($permissions, $title);
-            })
+            ->map(fn (Collection $permissions, $title) => $this->makeCheckBoxGroup($permissions, $title))
             ->flatten()
             ->toArray();
     }
 
-    /**
-     * @param Collection $permissions
-     * @param string     $title
-     *
-     * @return Collection
-     */
     private function makeCheckBoxGroup(Collection $permissions, string $title): Collection
     {
         return $permissions
-            ->map(function (array $chunks) {
-                return $this->makeCheckBox(collect($chunks));
-            })
+            ->map(fn (array $chunks) => $this->makeCheckBox(collect($chunks)))
             ->flatten()
-            ->map(function (CheckBox $checkbox, $key) use ($title) {
-                return $key === 0
-                    ? $checkbox->title($title)
-                    : $checkbox;
-            })
+            ->map(fn (CheckBox $checkbox, $key) => $key === 0
+                ? $checkbox->title($title)
+                : $checkbox)
             ->chunk(4)
-            ->map(function (Collection $checkboxes) {
-                return Group::make($checkboxes->toArray())
-                    ->alignEnd()
-                    ->autoWidth();
-            });
+            ->map(fn (Collection $checkboxes) => Group::make($checkboxes->toArray())
+                ->alignEnd()
+                ->autoWidth());
     }
 
-    /**
-     * @param Collection $chunks
-     *
-     * @return CheckBox
-     */
     private function makeCheckBox(Collection $chunks): CheckBox
     {
         return CheckBox::make('permissions.'.base64_encode($chunks->get('slug')))
@@ -93,12 +69,6 @@ class RolePermissionLayout extends Rows
             ));
     }
 
-    /**
-     * @param $slug
-     * @param $value
-     *
-     * @return bool
-     */
     private function getIndeterminateStatus($slug, $value): bool
     {
         return optional($this->user)->hasAccess($slug) === true && $value === false;

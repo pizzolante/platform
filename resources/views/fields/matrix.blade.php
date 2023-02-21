@@ -23,14 +23,14 @@
         <tr class="add-row">
             <th colspan="{{ count($columns) }}" class="text-center p-0">
                 <a href="#" data-action="matrix#addRow" class="btn btn-block small text-muted">
-                    <x-orchid-icon path="plus-alt"/>
+                    <x-orchid-icon path="bs.plus-circle" class="me-2"/>
 
                     <span>{{ __('Add row') }}</span>
                 </a>
             </th>
         </tr>
 
-        <template>
+        <template class="matrix-template">
             @include('platform::partials.fields.matrixRow',['row' => [], 'key' => '{index}'])
         </template>
         </tbody>

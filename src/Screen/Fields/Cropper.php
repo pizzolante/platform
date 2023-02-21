@@ -85,14 +85,12 @@ class Cropper extends Picture
         'value',
         'target',
         'url',
+        'groups',
+        'path',
     ];
 
     /**
      * Set the minimum with of the resized image.
-     *
-     * @param int $width
-     *
-     * @return self
      */
     public function minWidth(int $width): self
     {
@@ -103,10 +101,6 @@ class Cropper extends Picture
 
     /**
      * Set the minimum height of the resized image.
-     *
-     * @param int $height
-     *
-     * @return self
      */
     public function minHeight(int $height): self
     {
@@ -117,10 +111,6 @@ class Cropper extends Picture
 
     /**
      * Set the maximum width of the resized image.
-     *
-     * @param int $width
-     *
-     * @return self
      */
     public function maxWidth(int $width): self
     {
@@ -131,10 +121,6 @@ class Cropper extends Picture
 
     /**
      * Set the maximum height of the resized image.
-     *
-     * @param int $height
-     *
-     * @return self
      */
     public function maxHeight(int $height): self
     {
@@ -145,10 +131,6 @@ class Cropper extends Picture
 
     /**
      * Set the minimum with and height of the resized image.
-     *
-     * @param int $size
-     *
-     * @return self
      */
     public function minCanvas(int $size): self
     {
@@ -160,10 +142,6 @@ class Cropper extends Picture
 
     /**
      * Set the maximum with and height of the resized image.
-     *
-     * @param int $size
-     *
-     * @return self
      */
     public function maxCanvas(int $size): self
     {

@@ -60,17 +60,17 @@ abstract class Layout implements JsonSerializable
     protected $query;
 
     /**
-     * @param Repository $repository
-     *
      * @return mixed
      */
     abstract public function build(Repository $repository);
 
-    /**
-     * @param string $method
-     *
-     * @return self
-     */
+    public function currentAsync(): self
+    {
+        $this->async = true;
+
+        return $this;
+    }
+
     public function async(string $method): self
     {
         if (! Str::startsWith($method, 'async')) {
@@ -83,18 +83,6 @@ abstract class Layout implements JsonSerializable
     }
 
     /**
-     * @return Layout
-     */
-    public function currentAsync(): self
-    {
-        $this->async = true;
-
-        return $this;
-    }
-
-    /**
-     * @param Repository $repository
-     *
      * @return mixed
      */
     protected function buildAsDeep(Repository $repository)
@@ -106,12 +94,8 @@ abstract class Layout implements JsonSerializable
         }
 
         $build = collect($this->layouts)
-            ->map(function ($layouts) {
-                return Arr::wrap($layouts);
-            })
-            ->map(function (iterable $layouts, string $key) use ($repository) {
-                return $this->buildChild($layouts, $key, $repository);
-            })
+            ->map(fn ($layouts) => Arr::wrap($layouts))
+            ->map(fn (iterable $layouts, string $key) => $this->buildChild($layouts, $key, $repository))
             ->collapse()
             ->all();
 
@@ -127,8 +111,6 @@ abstract class Layout implements JsonSerializable
 
     /**
      * Return URL for screen template requests from browser.
-     *
-     * @return string|null
      */
     private function asyncRoute(): ?string
     {
@@ -148,7 +130,6 @@ abstract class Layout implements JsonSerializable
     /**
      * @param array      $layouts
      * @param int|string $key
-     * @param Repository $repository
      *
      * @return array
      */
@@ -156,12 +137,8 @@ abstract class Layout implements JsonSerializable
     {
         return collect($layouts)
             ->flatten()
-            ->map(function ($layout) {
-                return is_object($layout) ? $layout : resolve($layout);
-            })
-            ->filter(function () {
-                return $this->isSee();
-            })
+            ->map(fn ($layout) => is_object($layout) ? $layout : resolve($layout))
+            ->filter(fn () => $this->isSee())
             ->reduce(function ($build, self $layout) use ($key, $repository) {
                 $build[$key][] = $layout->build($repository);
 
@@ -172,8 +149,6 @@ abstract class Layout implements JsonSerializable
     /**
      * Returns the system layer name.
      * Required to define an asynchronous layer.
-     *
-     * @return string
      */
     public function getSlug(): string
     {
@@ -181,8 +156,6 @@ abstract class Layout implements JsonSerializable
     }
 
     /**
-     * @param string $slug
-     *
      * @return Layout|null
      */
     public function findBySlug(string $slug)
@@ -191,11 +164,8 @@ abstract class Layout implements JsonSerializable
             return $this;
         }
 
-        $layouts = method_exists($this, 'layouts')
-            ? $this->layouts()
-            : $this->layouts;
-
-        return collect($layouts)
+        // Trying to find the right layer inside
+        return collect($this->layouts)
             ->flatten()
             ->map(static function ($layout) use ($slug) {
                 $layout = is_object($layout)
@@ -205,15 +175,10 @@ abstract class Layout implements JsonSerializable
                 return $layout->findBySlug($slug);
             })
             ->filter()
-            ->filter(static function ($layout) use ($slug) {
-                return $layout->getSlug() === $slug;
-            })
+            ->filter(static fn ($layout) => $layout->getSlug() === $slug)
             ->first();
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         $props = collect(get_object_vars($this));

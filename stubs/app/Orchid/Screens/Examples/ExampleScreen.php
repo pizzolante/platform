@@ -27,7 +27,7 @@ class ExampleScreen extends Screen
     erat in luctus.';
 
     /**
-     * Query data.
+     * Fetch data to be displayed on the screen.
      *
      * @return array
      */
@@ -74,9 +74,7 @@ class ExampleScreen extends Screen
     }
 
     /**
-     * Display header name.
-     *
-     * @return string|null
+     * The name of the screen displayed in the header.
      */
     public function name(): ?string
     {
@@ -85,8 +83,6 @@ class ExampleScreen extends Screen
 
     /**
      * Display header description.
-     *
-     * @return string|null
      */
     public function description(): ?string
     {
@@ -94,7 +90,7 @@ class ExampleScreen extends Screen
     }
 
     /**
-     * Button commands.
+     * The screen's action buttons.
      *
      * @return \Orchid\Screen\Action[]
      */
@@ -105,23 +101,24 @@ class ExampleScreen extends Screen
             Button::make('Show toast')
                 ->method('showToast')
                 ->novalidate()
-                ->icon('bag'),
+                ->icon('bs.chat-square-dots'),
 
             ModalToggle::make('Launch demo modal')
                 ->modal('exampleModal')
                 ->method('showToast')
-                ->icon('full-screen'),
+                ->icon('bs.window'),
 
             Button::make('Export file')
-                ->method('export')
-                ->icon('cloud-download')
+                ->method('export', [
+                    'name' => 'Any name for file',
+                ])
+                ->icon('bs.cloud-arrow-down')
                 ->rawClick()
                 ->novalidate(),
 
             DropDown::make('Dropdown button')
-                ->icon('folder-alt')
+                ->icon('bs.folder')
                 ->list([
-
                     Button::make('Action')
                         ->method('showToast')
                         ->icon('bag'),
@@ -133,13 +130,19 @@ class ExampleScreen extends Screen
                     Button::make('Something else here')
                         ->method('showToast')
                         ->icon('bulb'),
+
+                    Button::make('Confirm button')
+                        ->method('showToast')
+                        ->confirm('If you click you will see a toast message')
+                        ->novalidate()
+                        ->icon('shield'),
                 ]),
 
         ];
     }
 
     /**
-     * Views.
+     * The screen's layout elements.
      *
      * @return string[]|\Orchid\Screen\Layout[]
      */
@@ -154,31 +157,28 @@ class ExampleScreen extends Screen
             ]),
 
             Layout::columns([
-                ChartLineExample::class,
-                ChartBarExample::class,
+                ChartLineExample::make('charts', 'Line Chart')
+                    ->description('Visualize data trends with multi-colored line graphs.'),
+
+                ChartBarExample::make('charts', 'Bar Chart')
+                    ->description('Compare data sets with colorful bar graphs.'),
             ]),
 
             Layout::table('table', [
                 TD::make('id', 'ID')
                     ->width('150')
-                    ->render(function (Repository $model) {
-                        // Please use view('path')
-                        return "<img src='https://picsum.photos/450/200?random={$model->get('id')}'
+                    ->render(fn (Repository $model) => // Please use view('path')
+"<img src='https://loremflickr.com/500/300?random={$model->get('id')}'
                               alt='sample'
-                              class='mw-100 d-block img-fluid'>
-                            <span class='small text-muted mt-1 mb-0'># {$model->get('id')}</span>";
-                    }),
+                              class='mw-100 d-block img-fluid rounded-1 w-100'>
+                            <span class='small text-muted mt-1 mb-0'># {$model->get('id')}</span>"),
 
                 TD::make('name', 'Name')
                     ->width('450')
-                    ->render(function (Repository $model) {
-                        return Str::limit($model->get('name'), 200);
-                    }),
+                    ->render(fn (Repository $model) => Str::limit($model->get('name'), 200)),
 
                 TD::make('price', 'Price')
-                    ->render(function (Repository $model) {
-                        return '$ '.number_format($model->get('price'), 2);
-                    }),
+                    ->render(fn (Repository $model) => '$ '.number_format($model->get('price'), 2)),
 
                 TD::make('created_at', 'Created'),
             ]),
@@ -193,9 +193,6 @@ class ExampleScreen extends Screen
         ];
     }
 
-    /**
-     * @param Request $request
-     */
     public function showToast(Request $request): void
     {
         Toast::warning($request->get('toast', 'Hello, world! This is a toast message.'));

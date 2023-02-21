@@ -40,11 +40,11 @@ class LoginTest extends TestBrowserCase
 
             //Logout
             $browser
-                ->visitRoute('platform.main')
+                ->visitRoute('platform.profile')
                 ->clickLink($user->name)
-                ->assertSee('Sign out')
-                ->click('@logout-button')
-                ->waitForText('404');
+                ->waitForText('Sign out', 5)
+                ->press('Sign out')
+                ->waitForText('404', 5);
 
             //Redirect to login
             $browser

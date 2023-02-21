@@ -11,7 +11,7 @@ use Orchid\Tests\TestFeatureCase;
 
 class GuardAuthTest extends TestFeatureCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -51,7 +51,6 @@ class GuardAuthTest extends TestFeatureCase
     public function testCustomGuardShouldUse(): void
     {
         Route::middleware(config('platform.middleware.private'))->get('custom-guard', function () {
-
             /** @var \Illuminate\Auth\SessionGuard $sessionGuard */
             $sessionGuard = Auth::guard();
 

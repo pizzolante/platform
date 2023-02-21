@@ -67,6 +67,7 @@ class Attachment extends Model
         'mime',
         'extension',
         'disk',
+        'group',
     ];
 
     /**
@@ -78,11 +79,9 @@ class Attachment extends Model
         'mime',
         'extension',
         'disk',
+        'group',
     ];
 
-    /**
-     * @return BelongsTo
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(Dashboard::model(User::class));
@@ -90,10 +89,6 @@ class Attachment extends Model
 
     /**
      * Return the address by which you can access the file.
-     *
-     * @param string|null $default
-     *
-     * @return string|null
      */
     public function url(string $default = null): ?string
     {
@@ -106,17 +101,11 @@ class Attachment extends Model
             : $default;
     }
 
-    /**
-     * @return string|null
-     */
     public function getUrlAttribute(): ?string
     {
         return $this->url();
     }
 
-    /**
-     * @return string|null
-     */
     public function getRelativeUrlAttribute(): ?string
     {
         $url = $this->url();
@@ -128,9 +117,6 @@ class Attachment extends Model
         return parse_url($url, PHP_URL_PATH);
     }
 
-    /**
-     * @return string|null
-     */
     public function getTitleAttribute(): ?string
     {
         if ($this->original_name !== 'blob') {
@@ -140,9 +126,6 @@ class Attachment extends Model
         return $this->name.'.'.$this->extension;
     }
 
-    /**
-     * @return string|null
-     */
     public function physicalPath(): ?string
     {
         if ($this->path === null || $this->name === null) {
@@ -180,8 +163,6 @@ class Attachment extends Model
 
     /**
      * Get MIME type for file.
-     *
-     * @return string
      */
     public function getMimeType(): string
     {

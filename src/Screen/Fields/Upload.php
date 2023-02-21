@@ -87,6 +87,7 @@ class Upload extends Field
         'storage',
         'media',
         'closeOnAdd',
+        'path',
     ];
 
     /**
@@ -94,7 +95,6 @@ class Upload extends Field
      */
     public function __construct()
     {
-
         // Set max file size
         $this->addBeforeRender(function () {
             $maxFileSize = $this->get('maxFileSize');
@@ -146,20 +146,26 @@ class Upload extends Field
     }
 
     /**
-     * @param string $storage
-     *
      * @throws \Throwable
      *
      * @return $this
      */
     public function storage(string $storage): self
     {
-        $disk = config("filesystems.disks." . $storage);
+        $disk = config('filesystems.disks.'.$storage);
 
         throw_if($disk === null, 'The selected storage was not found');
 
         return $this
             ->set('storage', $storage)
             ->set('visibility', $disk['visibility'] ?? null);
+    }
+
+    /**
+     * Set custom attachment upload path
+     */
+    public function path(string $path): self
+    {
+        return $this->set('path', $path);
     }
 }

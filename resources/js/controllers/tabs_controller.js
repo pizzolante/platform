@@ -7,23 +7,21 @@ export default class extends ApplicationController {
      */
     connect() {
         const tabs = this.tabs();
-        const activeId = tabs[window.location.href][this.data.get('slug')];
+        const location = window.location.href.split(/[?#]/)[0];
+        const activeId = tabs[location][this.data.get('slug')];
 
-        if (activeId !== null && !this.data.get('active-tab')) {
-            $(`#${activeId}`).tab('show');
-        }
+        [].slice.call(this.element.querySelectorAll('a[role="tablist"]')).forEach(function (element) {
+            let tab = Tab.getOrCreateInstance(element)
 
-
-        var triggerTabList = [].slice.call(this.element.querySelectorAll('a[id="button-tab*"]'))
-        triggerTabList.forEach(function (triggerEl) {
-            var tabTrigger = new Tab(triggerEl)
-
-            triggerEl.addEventListener('click', function (event) {
+            element.addEventListener('click', (event) => {
                 event.preventDefault()
-                tabTrigger.show()
+                tab.show()
             })
         })
 
+        if (activeId !== null && !this.data.get('active-tab')) {
+            Tab.getOrCreateInstance(document.getElementById(activeId)).show();
+        }
     }
 
     /**
@@ -33,10 +31,12 @@ export default class extends ApplicationController {
     setActiveTab(event) {
         const activeId = event.target.id;
         const tabs = this.tabs();
+        const location = window.location.href.split(/[?#]/)[0];
 
-        tabs[window.location.href][this.data.get('slug')] = activeId;
+        tabs[location][this.data.get('slug')] = activeId;
         localStorage.setItem('tabs', JSON.stringify(tabs));
-        $(`#${activeId}`).tab('show');
+
+        Tab.getOrCreateInstance(document.getElementById(activeId)).show();
 
         return event.preventDefault();
     }
@@ -47,17 +47,18 @@ export default class extends ApplicationController {
      */
     tabs() {
         let tabs = JSON.parse(localStorage.getItem('tabs'));
+        const location = window.location.href.split(/[?#]/)[0];
 
         if (tabs === null) {
             tabs = {};
         }
 
-        if (tabs[window.location.href] === undefined) {
-            tabs[window.location.href] = {};
+        if (tabs[location] === undefined) {
+            tabs[location] = {};
         }
 
-        if (tabs[window.location.href][this.data.get('slug')] === undefined) {
-            tabs[window.location.href][this.data.get('slug')] = null;
+        if (tabs[location][this.data.get('slug')] === undefined) {
+            tabs[location][this.data.get('slug')] = null;
         }
 
         return tabs;

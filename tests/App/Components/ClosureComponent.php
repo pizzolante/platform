@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Orchid\Tests\App\Components;
 
 use Illuminate\View\Component;
@@ -16,8 +15,6 @@ class ClosureComponent extends Component
 
     /**
      * Create a new component instance.
-     *
-     * @param string $name
      */
     public function __construct(string $name)
     {
@@ -31,8 +28,6 @@ class ClosureComponent extends Component
      */
     public function render()
     {
-        return static function (array $data) {
-            return 'Hello '. $data['name'];
-        };
+        return static fn (array $data) => 'Hello '.$data['name'];
     }
 }

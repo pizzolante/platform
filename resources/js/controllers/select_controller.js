@@ -1,4 +1,5 @@
-import ApplicationController from "./application_controller";
+import TomSelect from 'tom-select';
+import ApplicationController from './application_controller';
 
 export default class extends ApplicationController {
     /**
@@ -8,36 +9,35 @@ export default class extends ApplicationController {
         if (document.documentElement.hasAttribute('data-turbo-preview')) {
             return;
         }
+
         const select = this.element.querySelector('select');
+        const plugins = ['change_listener'];
 
-        const parent = $(select).closest('.dropdown-menu, div');
-
-        $(select).select2({
-            width: '100%',
-            allowClear: !select.hasAttribute('required'),
-            placeholder: select.getAttribute('placeholder') || '',
-            maximumSelectionLength: select.getAttribute('maximumSelectionLength') || 0,
-            ...select.hasAttribute('tags') ? { tags: true } : '',
-            theme: 'bootstrap',
-            dropdownParent: parent.length ? parent : undefined,
-        });
-
-
-        // force change event for https://github.com/select2/select2/issues/1908
-        let forceChange = () => {
-            setTimeout(() => {
-                select.dispatchEvent(new Event('change'));
-            }, 100);
+        if (select.hasAttribute('multiple')) {
+            plugins.push('remove_button');
+            plugins.push('clear_button');
         }
 
-        $(select).on('select2:select', forceChange);
-        $(select).on('select2:unselect', forceChange);
-        $(select).on('select2:clear', forceChange);
+        this.choices = new TomSelect(select, {
+            create: this.data.get('allow-add') === 'true',
+            allowEmptyOption: true,
+            maxOptions: 'null',
+            placeholder: select.getAttribute('placeholder') === 'false' ? '' : select.getAttribute('placeholder'),
+            preload: true,
+            plugins,
+            maxItems: select.getAttribute('maximumSelectionLength') || select.hasAttribute('multiple') ? null : 1,
+            render: {
+                option_create: (data, escape) => `<div class="create">${this.data.get('message-add')} <strong>${escape(data.input)}</strong>&hellip;</div>`,
+                no_results: () => `<div class="no-results">${this.data.get('message-notfound')}</div>`,
+            },
+            onDelete: () => !! this.data.get('allow-empty'),
+        });
+    }
 
-        document.addEventListener('turbo:before-cache', () => {
-            if (typeof $(select) !== 'undefined' && $('select').data('select2')) {
-                $(select).select2('destroy');
-            }
-        }, { once: true });
+    /**
+     *
+     */
+    disconnect() {
+        this.choices.destroy();
     }
 }

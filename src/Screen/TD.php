@@ -75,113 +75,117 @@ class TD extends Cell
      * @var array
      */
     protected $filterOptions = [];
-    
+
+    /**
+     * Callable return filter value in column
+     *
+     * @var callable
+     */
+    protected $callbackFilterValue;
+
     /**
      * @param string|int $width
-     *
-     * @return TD
      */
     public function width($width): self
     {
         $this->width = $width;
-        
+
         return $this;
     }
-    
+
     /**
      * @param string|\Orchid\Screen\Field $filter
-     *
-     * @return TD
      */
     public function filterOptions(iterable $filterOptions): self
     {
         $this->filterOptions = $filterOptions;
-        
+
         return $this;
     }
-    
-    /**
-     * @param string|\Orchid\Screen\Field $filter
-     *
-     * @return TD
-     */
-    public function filter($filter = self::FILTER_TEXT, iterable $options = null): self
+
+    public function filterValue(callable $callable): self
     {
-        if ($options) {
+        $this->callbackFilterValue = $callable;
+
+        return $this;
+    }
+
+    /**
+     * @param string                 $filter
+     * @param iterable|callable|null $options
+     */
+    public function filter($filter = self::FILTER_TEXT, $options = null): self
+    {
+        if (is_iterable($options)) {
             $this->filterOptions($options);
         }
-        
+
+        if (is_callable($options)) {
+            $this->callbackFilterValue = $options;
+        }
+
         $this->filter = $filter;
-        
+
         return $this;
     }
-    
-    /**
-     * @param bool $sort
-     *
-     * @return TD
-     */
+
     public function sort(bool $sort = true): self
     {
         $this->sort = $sort;
-        
+
         return $this;
     }
-    
+
     /**
-     * @param string $align
-     *
      * @return $this
      */
     public function align(string $align): self
     {
         $this->align = $align;
-        
+
         return $this;
     }
-    
+
     /**
      * @return $this
      */
     public function alignLeft(): self
     {
         $this->align = self::ALIGN_LEFT;
-        
+
         return $this;
     }
-    
+
     /**
      * @return $this
      */
     public function alignRight(): self
     {
         $this->align = self::ALIGN_RIGHT;
-        
+
         return $this;
     }
-    
+
     /**
      * @return $this
      */
     public function alignCenter(): self
     {
         $this->align = self::ALIGN_CENTER;
-        
+
         return $this;
     }
-    
+
     /**
-     * @param int $colspan
-     *
      * @return $this
      */
     public function colspan(int $colspan): self
     {
         $this->colspan = $colspan;
-        
+
         return $this;
     }
-    
+
     /**
      * Builds a column heading.
      *
@@ -202,7 +206,7 @@ class TD extends Cell
             'popover'      => $this->popover,
         ]);
     }
-    
+
     /**
      * @return \Orchid\Screen\Field|null
      */
@@ -210,54 +214,38 @@ class TD extends Cell
     {
         /** @var \Orchid\Screen\Field $filter */
         $filter = $this->filter;
-        
+
         if ($filter === null) {
             return null;
         }
-        
+
         if (is_string($filter)) {
             $filter = $this->detectConstantFilter($filter);
         }
-        
+
         return $filter->name("filter[$this->column]")
-                      ->placeholder(__('Filter'))
-                      ->form('filters')
-                      ->value(
-                          $this->isComplexFieldType($filter) ? get_filter_string($this->column) : get_filter(
-                              $this->column
-                          )
-                      )
-                      ->autofocus();
+            ->placeholder(__('Filter'))
+            ->form('filters')
+            ->value(get_filter($this->column))
+            ->autofocus();
     }
-    
+
     /**
-     * @param string $filter
-     *
      * @return \Orchid\Screen\Field
      */
     protected function detectConstantFilter(string $filter): Field
     {
-        switch ($filter) {
-            case self::FILTER_DATE_RANGE:
-                $input = DateRange::make();
-                break;
-            case self::FILTER_NUMBER_RANGE:
-                $input = NumberRange::make();
-                break;
-            case self::FILTER_SELECT:
-                $input = Select::make()->options($this->filterOptions)->multiple();
-                break;
-            case self::FILTER_DATE:
-                $input = DateTimer::make()->inline()->format('Y-m-d');
-                break;
-            default:
-                $input = Input::make()->type($filter);
-                break;
-        }
+        $input = match ($filter) {
+            self::FILTER_DATE_RANGE   => DateRange::make()->disableMobile(),
+            self::FILTER_NUMBER_RANGE => NumberRange::make(),
+            self::FILTER_SELECT       => Select::make()->options($this->filterOptions)->multiple(),
+            self::FILTER_DATE         => DateTimer::make()->inline()->format('Y-m-d'),
+            default                   => Input::make()->type($filter),
+        };
 
         return $input;
     }
-    
+
     /**
      * Builds content for the column.
      *
@@ -265,10 +253,10 @@ class TD extends Cell
      *
      * @return Factory|View
      */
-    public function buildTd($repository)
+    public function buildTd($repository, ?object $loop = null)
     {
-        $value = $this->render ? $this->handler($repository) : $repository->getContent($this->name);
-        
+        $value = $this->render ? $this->handler($repository, $loop) : $repository->getContent($this->name);
+
         return view('platform::partials.layouts.td', [
             'align'   => $this->align,
             'value'   => $value,
@@ -278,15 +266,12 @@ class TD extends Cell
             'colspan' => $this->colspan,
         ]);
     }
-    
-    /**
-     * @return bool
-     */
+
     public function isAllowUserHidden(): bool
     {
         return $this->allowUserHidden;
     }
-    
+
     /**
      * Builds item menu for show/hiden column.
      *
@@ -297,97 +282,88 @@ class TD extends Cell
         if (! $this->isAllowUserHidden()) {
             return;
         }
-        
+
         return view('platform::partials.layouts.selectedTd', [
             'title'         => $this->title,
             'slug'          => $this->sluggable(),
             'defaultHidden' => var_export($this->defaultHidden, true),
         ]);
     }
-    
-    /**
-     * @return string
-     */
+
     protected function sluggable(): string
     {
         return Str::slug($this->name);
     }
-    
+
     /**
      * Prevents the user from hiding a column in the interface.
-     *
-     * @param bool $hidden
-     *
-     * @return TD
      */
     public function cantHide(bool $hidden = false): self
     {
         $this->allowUserHidden = $hidden;
-        
+
         return $this;
     }
-    
+
     /**
-     * @param bool $hidden
-     *
      * @return $this
      */
     public function defaultHidden(bool $hidden = true): self
     {
         $this->defaultHidden = $hidden;
-        
+
         return $this;
     }
-    
-    /**
-     * @return string
-     */
+
     public function buildSortUrl(): string
     {
         $query = request()->collect()->put('sort', revert_sort($this->column))->toArray();
-        
-        return url()->current() . '?' . http_build_query($query);
+
+        return url()->current().'?'.http_build_query($query);
     }
-    
+
     /**
      * @param TD[] $columns
-     *
-     * @return bool
      */
     public static function isShowVisibleColumns($columns): bool
     {
-        return collect($columns)->filter(function ($column) {
-            return $column->isAllowUserHidden();
-        })->isNotEmpty();
+        return collect($columns)->filter(fn ($column) => $column->isAllowUserHidden())->isNotEmpty();
     }
-    
+
     /**
      * Decides whether a filter can be provided with complex (array-like) value, or it needs a scalar one.
      *
-     * @return bool
+     * @param \Orchid\Screen\Field $field
      */
     protected function isComplexFieldType(Field $field): bool
     {
         return $field instanceof ComplexFieldConcern;
     }
-    
+
     protected function buildFilterString(): ?string
     {
         $filter = get_filter($this->column);
+
+        if ($filter === null) {
+            return null;
+        }
+
+        if ($this->callbackFilterValue !== null) {
+            return call_user_func($this->callbackFilterValue, $filter);
+        }
+
         if (is_array($filter)) {
             if (isset($filter['start']) || isset($filter['end'])) {
-                return ($filter['start'] ?? "") . ' - ' . ($filter['end'] ?? "");
+                return ($filter['start'] ?? '').' - '.($filter['end'] ?? '');
             }
-            
+
             if ($this->filterOptions) {
-                $filter = array_map(function ($val) {
-                    return $this->filterOptions[$val] ?? $val;
-                }, $filter);
+                $filter = array_map(fn ($val) => $this->filterOptions[$val] ?? $val, $filter);
             }
-            
+
             return implode(', ', $filter);
         }
-        
+
         return $filter;
     }
 }

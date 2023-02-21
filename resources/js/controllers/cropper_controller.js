@@ -1,5 +1,6 @@
 import ApplicationController from "./application_controller";
 import Cropper from 'cropperjs';
+import {Modal} from "bootstrap";
 
 export default class extends ApplicationController {
 
@@ -38,6 +39,19 @@ export default class extends ApplicationController {
     }
 
     /**
+     *
+     * @returns {Modal}
+     */
+    getModal()
+    {
+        if (!this.modal) {
+            this.modal = new Modal(this.element.querySelector('.modal'));
+        }
+
+        return this.modal;
+    }
+
+    /**
      * Event for uploading image
      *
      * @param event
@@ -52,7 +66,7 @@ export default class extends ApplicationController {
         }
 
         if (!event.target.files[0]) {
-            $(this.element.querySelector('.modal')).modal('show');
+            this.getModal().show();
             return;
         }
 
@@ -63,7 +77,7 @@ export default class extends ApplicationController {
             this.cropper.replace(reader.result)
         };
 
-        $(this.element.querySelector('.modal')).modal('show');
+        this.getModal().show();
     }
 
     /**
@@ -75,7 +89,7 @@ export default class extends ApplicationController {
             return;
         }
 
-        $(this.element.querySelector('.modal')).modal('show');
+        this.getModal().show();
     }
 
     /**
@@ -96,6 +110,8 @@ export default class extends ApplicationController {
 
             formData.append('file', blob);
             formData.append('storage', this.data.get('storage'));
+            formData.append('group', this.data.get('groups'));
+            formData.append('path', this.data.get('path'));
             formData.append('acceptedFiles', this.data.get('accepted-files'));
 
             let element = this.element;
@@ -112,7 +128,9 @@ export default class extends ApplicationController {
                     // add event for listener
                     element.querySelector('.cropper-path').dispatchEvent(new Event("change"));
 
-                    $(element.querySelector('.modal')).modal('hide');
+                    console.log(this.getModal(), this.getModal().hide());
+
+                    this.getModal().hide();
                 })
                 .catch((error) => {
                     this.alert('Validation error', 'File upload error');

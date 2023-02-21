@@ -9,14 +9,11 @@ use Orchid\Screen\Layouts\Chart;
 class ChartLineExample extends Chart
 {
     /**
-     * @var string
+     * Height of the chart.
+     *
+     * @var int
      */
-    protected $title = 'Line Chart';
-
-    /**
-     * @var string
-     */
-    protected $target = 'charts';
+    protected $height = 300;
 
     /**
      * Configuring line.

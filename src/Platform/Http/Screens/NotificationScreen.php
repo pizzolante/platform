@@ -44,7 +44,6 @@ class NotificationScreen extends Screen
     /**
      * Query data.
      *
-     * @param Request $request
      *
      * @return array
      */
@@ -74,6 +73,7 @@ class NotificationScreen extends Screen
             Button::make(__('Remove all'))
                 ->icon('trash')
                 ->method('removeAll')
+                ->confirm(__('After deleting notifications, this action cannot be undone and all associated data will be permanently lost.'))
                 ->canSee($this->isNotEmpty),
 
             Button::make(__('Mark all as read'))
@@ -98,9 +98,6 @@ class NotificationScreen extends Screen
     }
 
     /**
-     * @param string  $id
-     * @param Request $request
-     *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function maskNotification(string $id, Request $request)
@@ -118,9 +115,6 @@ class NotificationScreen extends Screen
         return redirect($url);
     }
 
-    /**
-     * @param Request $request
-     */
     public function markAllAsRead(Request $request)
     {
         $request->user()
@@ -132,8 +126,6 @@ class NotificationScreen extends Screen
     }
 
     /**
-     * @param Request $request
-     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function removeAll(Request $request)
@@ -149,8 +141,6 @@ class NotificationScreen extends Screen
     }
 
     /**
-     * @param Request $request
-     *
      * @return LengthAwarePaginator
      */
     public function unreadNotification(Request $request)

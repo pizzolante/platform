@@ -16,9 +16,10 @@ class Group implements Fieldable, Groupable
      * @var array
      */
     protected $attributes = [
-        'group' => [],
-        'class' => 'col-12 col-md form-group mb-md-0',
-        'align' => 'align-items-baseline',
+        'group'       => [],
+        'class'       => 'col-12 col-md form-group mb-md-0',
+        'align'       => 'align-items-baseline',
+        'itemToEnd'   => false,
     ];
 
     /**
@@ -34,8 +35,6 @@ class Group implements Fieldable, Groupable
     protected $view = 'platform::fields.group';
 
     /**
-     * @param array $group
-     *
      * @return static
      */
     public static function make(array $group = [])
@@ -52,8 +51,6 @@ class Group implements Fieldable, Groupable
     }
 
     /**
-     * @param array $group
-     *
      * @return $this
      */
     public function setGroup(array $group = []): Groupable
@@ -71,8 +68,6 @@ class Group implements Fieldable, Groupable
 
     /**
      * Columns only take up as much space as needed.
-     *
-     * @return self
      */
     public function autoWidth(): self
     {
@@ -81,8 +76,6 @@ class Group implements Fieldable, Groupable
 
     /**
      * Columns occupy the entire width of the screen.
-     *
-     * @return self
      */
     public function fullWidth(): self
     {
@@ -90,8 +83,7 @@ class Group implements Fieldable, Groupable
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return static
      */
@@ -103,7 +95,6 @@ class Group implements Fieldable, Groupable
     }
 
     /**
-     * @param string     $key
      * @param mixed|null $value
      *
      * @return static|mixed|null
@@ -113,24 +104,17 @@ class Group implements Fieldable, Groupable
         return $this->attributes[$key] ?? $value;
     }
 
-    /**
-     * @return array
-     */
     public function getAttributes(): array
     {
         return $this->attributes;
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
     public function form(string $name): self
     {
-        $group = array_map(function ($field) use ($name) {
-            return $field->form($name);
-        }, $this->getGroup());
+        $group = array_map(fn ($field) => $field->form($name), $this->getGroup());
 
         return $this->setGroup($group);
     }
@@ -164,14 +148,19 @@ class Group implements Fieldable, Groupable
      */
     public function alignStart(): self
     {
-        return $this->set('align', 'align-items-end');
+        return $this->set('align', 'align-items-start');
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return (string) $this->render();
+    }
+
+    /**
+     * @return $this
+     */
+    public function toEnd(): self
+    {
+        return $this->set('itemToEnd', true);
     }
 }

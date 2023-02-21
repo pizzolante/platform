@@ -34,9 +34,6 @@ trait UserAccess
         return $this->roles()->get();
     }
 
-    /**
-     * @return BelongsToMany
-     */
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Dashboard::model(Role::class), 'role_users', 'user_id', 'role_id');
@@ -44,8 +41,6 @@ trait UserAccess
 
     /**
      * @param Role|int|string $role
-     *
-     * @return bool
      */
     public function inRole($role): bool
     {
@@ -63,53 +58,35 @@ trait UserAccess
         return $role !== null;
     }
 
-    /**
-     * @param string $permit
-     * @param bool   $cache
-     *
-     * @return bool
-     */
     public function hasAccess(string $permit, bool $cache = true): bool
     {
         if (! $cache || $this->cachePermissions === null) {
             $this->cachePermissions = $this->roles()
                 ->pluck('permissions')
                 ->prepend($this->permissions)
-                ->filter(function ($permission) {
-                    return is_array($permission);
-                });
+                ->filter(fn ($permission) => is_array($permission));
         }
 
         return $this->cachePermissions
-            ->filter(function (array $permissions) use ($permit) {
-                return $this->filterWildcardAccess($permissions, $permit);
-            })
+            ->filter(fn (array $permissions) => $this->filterWildcardAccess($permissions, $permit))
             ->isNotEmpty();
     }
 
     /**
      * Permissions can be checked based on wildcards
      * using the * character to match any of a set of permissions.
-     *
-     * @param array  $permissions
-     * @param string $permit
-     *
-     * @return bool
      */
     protected function filterWildcardAccess(array $permissions, string $permit): bool
     {
-        return collect($permissions)->filter(function (bool $value, $permission) use ($permit) {
-            return Str::is($permit, $permission) && $value;
-        })->isNotEmpty();
+        return collect($permissions)
+            ->filter(fn (bool $value, $permission) => Str::is($permit, $permission) && $value)
+            ->isNotEmpty();
     }
 
     /**
      * This method will grant access if any permission passes the check.
      *
      * @param string|iterable $permissions
-     * @param bool            $cache
-     *
-     * @return bool
      */
     public function hasAnyAccess($permissions, bool $cache = true): bool
     {
@@ -118,25 +95,14 @@ trait UserAccess
         }
 
         return collect($permissions)
-            ->map(function (string $permit) use ($cache) {
-                return $this->hasAccess($permit, $cache);
-            })
-            ->filter(function (bool $result) {
-                return $result === true;
-            })
+            ->map(fn (string $permit) => $this->hasAccess($permit, $cache))
+            ->filter(fn (bool $result) => $result === true)
             ->isNotEmpty();
     }
 
     /**
-     *
      * Query Scope for retreiving users by a certain permission
      * The * character usage is not implemented.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $builder
-     * @param string                                $permitWithoutWildcard
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     *
      */
     public function scopeByAccess(Builder $builder, string $permitWithoutWildcard): Builder
     {
@@ -148,15 +114,10 @@ trait UserAccess
     }
 
     /**
-     *
      * Query Scope for retreiving users by any permissions
      * The * character usage is not implemented.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $builder
-     * @param string|iterable                       $permitsWithoutWildcard
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     *
+     * @param string|iterable $permitsWithoutWildcard
      */
     public function scopeByAnyAccess(Builder $builder, $permitsWithoutWildcard): Builder
     {
@@ -183,11 +144,6 @@ trait UserAccess
             });
     }
 
-    /**
-     * @param Model $role
-     *
-     * @return Model
-     */
     public function addRole(Model $role): Model
     {
         $result = $this->roles()->save($role);
@@ -199,10 +155,6 @@ trait UserAccess
 
     /**
      * Remove Role Slug.
-     *
-     * @param string $slug
-     *
-     * @return int
      */
     public function removeRoleBySlug(string $slug): int
     {
@@ -218,8 +170,6 @@ trait UserAccess
     }
 
     /**
-     * @param RoleInterface $role
-     *
      * @return int|null
      */
     public function removeRole(RoleInterface $role): int
@@ -228,8 +178,6 @@ trait UserAccess
     }
 
     /**
-     * @param array|null $roles
-     *
      * @return $this
      */
     public function replaceRoles(?array $roles = [])
@@ -263,9 +211,6 @@ trait UserAccess
 
     /**
      * @throws Exception
-     *
-     * @return bool
-     *
      */
     public function delete(): bool
     {
@@ -278,9 +223,6 @@ trait UserAccess
         return parent::delete();
     }
 
-    /**
-     * @return self
-     */
     public function clearCachePermission(): self
     {
         $this->cachePermissions = null;

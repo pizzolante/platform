@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
+use Orchid\Access\Impersonation;
+use Orchid\Screen\Screen;
 
 /**
  * Class Access.
@@ -26,8 +28,6 @@ class Access
 
     /**
      * AccessMiddleware constructor.
-     *
-     * @param Auth $auth
      */
     public function __construct(Auth $auth)
     {
@@ -36,10 +36,6 @@ class Access
     }
 
     /**
-     * @param Request $request
-     * @param Closure $next
-     * @param string  $permission
-     *
      * @return ResponseFactory|RedirectResponse|Response|mixed
      */
     public function handle(Request $request, Closure $next, string $permission = 'platform.index')
@@ -54,15 +50,18 @@ class Access
             return $next($request);
         }
 
+        if (Impersonation::isSwitch()) {
+            return response()->view('platform::auth.impersonation');
+        }
+
         // The current user is already signed in.
         // It means that he does not have the privileges to view.
-        abort(403);
+        abort(Screen::unaccessed());
     }
 
     /**
      * Redirect on the application login form.
      *
-     * @param Request $request
      *
      * @return \Illuminate\Contracts\Foundation\Application|ResponseFactory|RedirectResponse|Response
      */

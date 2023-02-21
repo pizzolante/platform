@@ -11,13 +11,13 @@
             !!}
         </th>
 
-        @if ($loop->last)
+        @if ($loop->last && $removableRows)
             <th class="no-border text-center align-middle">
                 <a href="#"
                    data-action="matrix#deleteRow"
                    class="small text-muted"
                    title="Remove row">
-                    <x-orchid-icon path="trash"/>
+                    <x-orchid-icon path="bs.trash3"/>
                 </a>
             </th>
         @endif

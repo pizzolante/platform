@@ -48,6 +48,7 @@ class Relation extends Field
         'relationAppend'        => null,
         'relationSearchColumns' => null,
         'chunk'                 => 10,
+        'allowEmpty'            => '',
     ];
 
     /**
@@ -83,14 +84,8 @@ class Relation extends Field
 
     /**
      * @param string|Model $model
-     * @param string       $name
-     * @param string|null  $key
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     *
-     * @return Relation
-     *
-     *
      */
     public function fromModel(string $model, string $name, string $key = null): self
     {
@@ -120,24 +115,15 @@ class Relation extends Field
             }
 
             $value = collect($value)
-                ->map(static function ($item) use ($text, $key) {
-                    return [
-                        'id'   => $item->$key,
-                        'text' => $item->$text,
-                    ];
-                })->toJson();
+                ->map(static fn ($item) => [
+                    'id'   => $item->$key,
+                    'text' => $item->$text,
+                ])->toArray();
 
             $this->set('value', $value);
         });
     }
 
-    /**
-     * @param string $class
-     * @param string $name
-     * @param string $key
-     *
-     * @return Relation
-     */
     public function fromClass(string $class, string $name, string $key = 'id'): self
     {
         $this->set('relationModel', Crypt::encryptString($class));
@@ -148,7 +134,7 @@ class Relation extends Field
             $value = $this->get('value');
 
             if (empty($value)) {
-                return $this->set('value', json_encode($value));
+                return $this->set('value', $value);
             }
 
             $scope = $this->get('scope', 'handler');
@@ -176,17 +162,14 @@ class Relation extends Field
                         'id'   => $item->get($key),
                         'text' => $item->get($name),
                     ];
-                })->toJson();
+                })->toArray();
 
             $this->set('value', $value);
         });
     }
 
     /**
-     * @param string $scope
-     * @param array  $parameters
-     *
-     * @return Relation
+     * @param array $parameters
      */
     public function applyScope(string $scope, ...$parameters): self
     {
@@ -217,10 +200,6 @@ class Relation extends Field
     /**
      * Displays the calculated model
      * field in the selection field.
-     *
-     * @param string $append
-     *
-     * @return Relation
      */
     public function displayAppend(string $append): self
     {
@@ -232,7 +211,6 @@ class Relation extends Field
     /**
      * Set the maximum number of items that may be selected.
      *
-     * @param int $number
      *
      * @return $this
      */
@@ -246,12 +224,32 @@ class Relation extends Field
     /**
      * Sets the size of the chunk to be shown to the user.
      *
-     * @param int $value
      *
      * @return $this
      */
     public function chunk(int $value)
     {
         return $this->set('chunk', $value);
+    }
+
+    /**
+     * Allow empty value to be set
+     *
+     *
+     * @return $this
+     */
+    public function allowEmpty(bool $value = true)
+    {
+        return $this->set('allowEmpty', $value);
+    }
+
+    /**
+     * Allow empty value to be set
+     *
+     * @deprecated use `allowEmpty()` instead
+     */
+    public function nullable(bool $value = true): self
+    {
+        return $this->set('allowEmpty', $value);
     }
 }

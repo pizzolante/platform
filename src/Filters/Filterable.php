@@ -12,37 +12,23 @@ trait Filterable
 {
     /**
      * Apply the filter to the given query.
-     *
-     * @param Builder  $query
-     * @param iterable $filters
-     *
-     * @return Builder
      */
     public function scopeFiltersApply(Builder $query, iterable $filters = []): Builder
     {
         return collect($filters)
-            ->map(function ($filter) {
-                return is_object($filter) ? $filter : resolve($filter);
-            })
-            ->reduce(function (Builder $query, Filter $filter) {
-                return $filter->filter($query);
-            }, $query);
+            ->map(fn ($filter) => is_object($filter) ? $filter : resolve($filter))
+            ->reduce(fn (Builder $query, Filter $filter) => $filter->filter($query), $query);
     }
 
     /**
      * Apply the filter to the given selection.
      *
-     * @param Builder          $query
-     * @param string|Selection $selection
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     *
-     * @return Builder
+     * @param string|Selection $class
      */
-    public function scopeFiltersApplySelection(Builder $query, $selection): Builder
+    public function scopeFiltersApplySelection(Builder $query, $class): Builder
     {
         /** @var Selection $selection */
-        $selection = is_object($selection) ? $selection : resolve($selection);
+        $selection = is_object($class) ? $class : resolve($class);
 
         $filters = $selection->filters();
 
@@ -50,24 +36,23 @@ trait Filterable
     }
 
     /**
-     * @param Builder         $builder
-     * @param HttpFilter|null $httpFilter
-     *
-     * @return Builder
+     * @param iterable|string|Selection $kit
      */
-    public function scopeFilters(Builder $builder, HttpFilter $httpFilter = null): Builder
+    public function scopeFilters(Builder $builder, mixed $kit = null, HttpFilter $httpFilter = null): Builder
     {
         $filter = $httpFilter ?? new HttpFilter();
         $filter->build($builder);
 
-        return $builder;
+        if ($kit === null) {
+            return $builder;
+        }
+
+        return is_iterable($kit)
+            ? $this->scopeFiltersApply($builder, $kit)
+            : $this->scopeFiltersApplySelection($builder, $kit);
     }
 
     /**
-     * @param Builder $builder
-     * @param string  $column
-     * @param string  $direction
-     *
      * @return Builder
      */
     public function scopeDefaultSort(Builder $builder, string $column, string $direction = 'asc')
@@ -79,9 +64,6 @@ trait Filterable
         return $builder;
     }
 
-    /**
-     * @return Collection
-     */
     public function getOptionsFilter(): Collection
     {
         return collect([

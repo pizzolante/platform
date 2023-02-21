@@ -27,12 +27,13 @@ class Matrix extends Field
      * @var array
      */
     protected $attributes = [
-        'index'    => 0,
-        'idPrefix' => null,
-        'maxRows'  => 0,
-        'keyValue' => false,
-        'fields'   => [],
-        'columns'  => [
+        'index'             => 0,
+        'removableRows'     => true,
+        'idPrefix'          => null,
+        'maxRows'           => 0,
+        'keyValue'          => false,
+        'fields'            => [],
+        'columns'           => [
             'key',
             'value',
         ],
@@ -81,13 +82,19 @@ class Matrix extends Field
     }
 
     /**
-     * @param int $count
-     *
      * @return Field|Matrix
      */
     public function maxRows(int $count)
     {
         return $this->set('maxRows', $count);
+    }
+
+    /**
+     * @return Field|Matrix
+     */
+    public function removableRows(bool $value = true)
+    {
+        return $this->set('removableRows', $value);
     }
 
     /**
@@ -100,9 +107,6 @@ class Matrix extends Field
         return $this->set('fields', $fields);
     }
 
-    /**
-     * @return string
-     */
     protected function getIdPrefix(): string
     {
         $idPrefix = $this->get('idPrefix');

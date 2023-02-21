@@ -32,13 +32,17 @@ class Generator implements Engine
     protected $uniqueId;
 
     /**
+     * @var ?string
+     */
+    protected $path;
+
+    /**
      * Generator constructor.
-     *
-     * @param UploadedFile $file
      */
     public function __construct(UploadedFile $file)
     {
         $this->file = $file;
+        $this->path = null;
         $this->time = time();
         $this->mimes = new MimeTypes();
         $this->uniqueId = uniqid('', true);
@@ -47,8 +51,6 @@ class Generator implements Engine
     /**
      * Returns name to create a real file on disk and write to the database.
      * Specified any string without extension.
-     *
-     * @return string
      */
     public function name(): string
     {
@@ -57,8 +59,6 @@ class Generator implements Engine
 
     /**
      * Returns name to create a file with extension.
-     *
-     * @return string
      */
     public function fullName(): string
     {
@@ -67,19 +67,27 @@ class Generator implements Engine
 
     /**
      * Returns the relative file path.
-     *
-     * @return string
      */
     public function path(): string
     {
-        return date('Y/m/d', $this->time());
+        return $this->path ?? date('Y/m/d', $this->time());
+    }
+
+    /**
+     * Set a custom path
+     *
+     * @return Generator
+     */
+    public function setPath(?string $path = null)
+    {
+        $this->path = $path;
+
+        return $this;
     }
 
     /**
      * Returns file hash string that will indicate
      * that the same file has already been downloaded.
-     *
-     * @return string
      */
     public function hash(): string
     {
@@ -88,8 +96,6 @@ class Generator implements Engine
 
     /**
      * Return a Unix file upload timestamp.
-     *
-     * @return int
      */
     public function time(): int
     {
@@ -98,8 +104,6 @@ class Generator implements Engine
 
     /**
      * Returns file extension.
-     *
-     * @return string
      */
     public function extension(): string
     {
@@ -112,8 +116,6 @@ class Generator implements Engine
 
     /**
      * Returns the file mime type.
-     *
-     * @return string
      */
     public function mime(): string
     {

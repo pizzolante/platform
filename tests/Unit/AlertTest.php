@@ -14,6 +14,20 @@ use Orchid\Tests\TestUnitCase;
  */
 class AlertTest extends TestUnitCase
 {
+    public function testHtmlSanitize(): void
+    {
+        Alert::info('<h1>Hello Word</h1>');
+
+        self::assertEquals('&lt;h1&gt;Hello Word&lt;/h1&gt;', session('flash_notification.message'));
+    }
+
+    public function testWithoutSanitize(): void
+    {
+        Alert::withoutEscaping()->info('<h1>Hello Word</h1>');
+
+        self::assertEquals('<h1>Hello Word</h1>', session('flash_notification.message'));
+    }
+
     public function testHelperAlert(): void
     {
         alert('test');
@@ -26,9 +40,6 @@ class AlertTest extends TestUnitCase
 
     /**
      * @dataProvider getLevels
-     *
-     * @param $level
-     * @param $css
      */
     public function testShouldFlashLevelsAlert(string $level, string $css): void
     {
@@ -40,9 +51,6 @@ class AlertTest extends TestUnitCase
 
     /**
      * @dataProvider getLevels
-     *
-     * @param $level
-     * @param $css
      */
     public function testShouldFlashLevelsToast(string $level, string $css): void
     {
@@ -65,7 +73,7 @@ class AlertTest extends TestUnitCase
 
     public function testShouldFlashViewAlert(): void
     {
-        Alert::view('exemplar::alert', Color::INFO(), [
+        Alert::view('exemplar::alert', Color::INFO, [
             'name' => 'Alexandr',
         ]);
 
@@ -84,8 +92,6 @@ class AlertTest extends TestUnitCase
 
     /**
      * Array of keys and css classes.
-     *
-     * @return array
      */
     public function getLevels(): array
     {

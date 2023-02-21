@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Orchid\Tests\Unit\Screen\Fields;
 
+use Illuminate\Http\UploadedFile;
+use Orchid\Attachment\File;
 use Orchid\Attachment\Models\Attachment;
 use Orchid\Screen\Fields\Upload;
 use Orchid\Support\Init;
@@ -33,7 +35,6 @@ class UploadTest extends TestFieldsUnitCase
     {
         $imagesGroup = Attachment::factory()->create(['group' => 'images']);
         $docsGroup = Attachment::factory()->create(['group' => 'docs']);
-
 
         $upload = Upload::make('file')->value([
             $docsGroup,
@@ -76,5 +77,21 @@ class UploadTest extends TestFieldsUnitCase
 
         $this->assertStringContainsString($imagesGroup->getTitleAttribute(), $view);
         $this->assertStringNotContainsString($docsGroup->getTitleAttribute(), $view);
+    }
+
+    public function testUploadedPath(): void
+    {
+        $file = UploadedFile::fake()->create('document.jpg', 200);
+        $path = 'custom-path';
+        $attachment = new File($file);
+        $upload = $attachment->path($path)->load();
+
+        $uploader = Upload::make('file')
+                    ->path($path);
+
+        $view = self::renderField($uploader);
+
+        $this->assertStringContainsString(sprintf('data-upload-path="%s"', $path), $view);
+        $this->assertSame($upload->path, $path.'/');
     }
 }

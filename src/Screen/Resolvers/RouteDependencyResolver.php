@@ -19,21 +19,11 @@ class RouteDependencyResolver
      */
     protected $container;
 
-    /**
-     * @param \Illuminate\Container\Container $container
-     */
     public function __construct(Container $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * @param Screen $screen
-     * @param string $method
-     * @param array  $httpQueryArguments
-     *
-     * @return array
-     */
     public function resolveScreen(Screen $screen, string $method, array $httpQueryArguments = []): array
     {
         if ($this->missingPublicMethod($screen, $method)) {
@@ -58,7 +48,7 @@ class RouteDependencyResolver
 
         // We'll set the route action to be from the parameter method from the chosen
         // Screen to get the proper implicit bindings.
-        $route->uses(get_class($screen) . '@' . $method);
+        $route->uses(get_class($screen).'@'.$method);
 
         ImplicitRouteBinding::resolveForRoute($this->container, Route::current());
 
@@ -71,12 +61,6 @@ class RouteDependencyResolver
         ])->values()->all();
     }
 
-    /**
-     * @param \Orchid\Screen\Screen $screen
-     * @param string                $method
-     *
-     * @return bool
-     */
     protected function missingPublicMethod(Screen $screen, string $method): bool
     {
         $class = new \ReflectionClass($screen);

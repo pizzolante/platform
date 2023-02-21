@@ -1,7 +1,7 @@
 @component($typeForm, get_defined_vars())
     <div data-controller="cropper"
          data-cropper-value="{{ $attributes['value'] }}"
-         data-cropper-storage="{{ $storage ?? 'public' }}"
+         data-cropper-storage="{{ $storage ?? config('platform.attachment.disk', 'public') }}"
          data-cropper-width="{{ $width }}"
          data-cropper-height="{{ $height }}"
          data-cropper-min-width="{{ $minWidth }}"
@@ -12,6 +12,8 @@
          data-cropper-url="{{ $url }}"
          data-cropper-accepted-files="{{ $acceptedFiles }}"
          data-cropper-max-file-size="{{ $maxFileSize }}"
+         data-cropper-groups="{{ $attributes['groups'] }}"
+         data-cropper-path="{{ $attributes['path'] ?? '' }}"
     >
         <div class="border-dashed text-end p-3 cropper-actions">
 
@@ -23,12 +25,12 @@
 
             <div class="btn-group">
                 <label class="btn btn-default m-0">
-                    <x-orchid-icon path="cloud-upload" class="me-2"/>
+                    <x-orchid-icon path="bs.cloud-arrow-up" class="me-2"/>
 
                     {{ __('Browse') }}
                     <input type="file"
                            accept="image/*"
-                           data-target="cropper.upload"
+                           data-cropper-target="upload"
                            data-action="change->cropper#upload click->cropper#openModal"
                            class="d-none">
                 </label>
@@ -44,7 +46,7 @@
 
         <input class="cropper-path d-none"
                type="text"
-               data-target="cropper.source"
+               data-cropper-target="source"
             {{ $attributes }}
         >
 

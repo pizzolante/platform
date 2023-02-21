@@ -66,6 +66,7 @@ class Picture extends Field
         'target',
         'url',
         'groups',
+        'path',
     ];
 
     /**
@@ -94,8 +95,6 @@ class Picture extends Field
     /**
      * The stored value will be in the form
      * of id attachment.
-     *
-     * @return self
      */
     public function targetId(): self
     {
@@ -120,8 +119,6 @@ class Picture extends Field
     /**
      * The saved value will be in the form
      * of a full address before the file.
-     *
-     * @return self
      */
     public function targetUrl(): self
     {
@@ -133,13 +130,19 @@ class Picture extends Field
     /**
      * The saved value will be in the form
      * of a relative address before the file.
-     *
-     * @return self
      */
     public function targetRelativeUrl(): self
     {
         $this->set('target', 'relativeUrl');
 
         return $this;
+    }
+
+    /**
+     * Set custom attachment upload path
+     */
+    public function path(string $path): self
+    {
+        return $this->set('path', $path);
     }
 }

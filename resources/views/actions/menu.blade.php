@@ -1,6 +1,6 @@
 @isset($title)
     <li class="nav-item mt-3 mb-1">
-        <div class="text-muted ms-4 w-100 user-select-none">{{ __($title) }}</div>
+        <small class="text-muted ms-4 w-100 user-select-none">{{ __($title) }}</small>
     </li>
 @endisset
 
@@ -13,7 +13,7 @@
             <x-orchid-icon :path="$icon" class="{{ empty($name) ?: 'me-2'}}"/>
         @endisset
 
-        {{ $name ?? '' }}
+        <span class="me-2">{{ $name ?? '' }}</span>
 
         @isset($badge)
             <b class="badge bg-{{$badge['class']}} col-auto ms-auto">{{$badge['data']()}}</b>
@@ -23,9 +23,13 @@
 @endif
 
 @if(!empty($list))
-    <div class="nav collapse sub-menu ps-2 {{active($active, 'show')}}"
+    <div class="nav collapse sub-menu ps-3 {{active($active, 'show')}}"
          id="menu-{{$slug}}"
-         data-bs-parent="#headerMenuCollapse">
+         @isset($parent)
+            data-bs-parent="#menu-{{$parent}}">
+         @else
+            data-bs-parent="#headerMenuCollapse">
+         @endisset
         @foreach($list as $item)
             {!!  $item->build($source) !!}
         @endforeach

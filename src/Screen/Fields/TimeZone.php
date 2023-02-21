@@ -36,8 +36,11 @@ class TimeZone extends Field
      * @var array
      */
     protected $attributes = [
-        'class'   => 'form-control',
-        'options' => [],
+        'class'        => 'form-control',
+        'options'      => [],
+        'allowEmpty'   => 0,
+        'allowAdd'     => false,
+        'isOptionList' => false,
     ];
 
     /**
@@ -62,19 +65,17 @@ class TimeZone extends Field
     public function __construct()
     {
         $this->listIdentifiers();
+
+        $this->addBeforeRender(function () {
+            $isOptionList = array_is_list((array) $this->get('options', []));
+            $this->set('isOptionList', $isOptionList);
+        });
     }
 
-    /**
-     * @param int $time
-     *
-     * @return self
-     */
     public function listIdentifiers(int $time = DateTimeZone::ALL): self
     {
         $timeZone = collect(DateTimeZone::listIdentifiers($time))
-            ->mapWithKeys(static function ($timezone) {
-                return [$timezone => $timezone];
-            })->toArray();
+            ->mapWithKeys(static fn ($timezone) => [$timezone => $timezone])->toArray();
 
         $this->set('options', $timeZone);
 

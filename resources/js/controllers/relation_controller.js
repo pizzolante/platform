@@ -1,4 +1,5 @@
-import ApplicationController from "./application_controller";
+import TomSelect from 'tom-select';
+import ApplicationController from './application_controller';
 
 export default class extends ApplicationController {
     static get targets() {
@@ -6,11 +7,44 @@ export default class extends ApplicationController {
     }
 
     connect() {
-        if (document.documentElement.hasAttribute("data-turbo-preview")) {
+        if (document.documentElement.hasAttribute('data-turbo-preview')) {
             return;
         }
 
         const select = this.selectTarget;
+        const plugins = ['change_listener'];
+
+        if (select.hasAttribute('multiple')) {
+            plugins.push('remove_button');
+            plugins.push('clear_button');
+        }
+
+        this.choices = new TomSelect(select, {
+            allowEmptyOption: true,
+            placeholder: select.getAttribute('placeholder') === 'false' ? '' : select.getAttribute('placeholder'),
+            preload: 'focus',
+            plugins,
+            maxOptions: this.data.get('chunk'),
+            maxItems: select.getAttribute('maximumSelectionLength') || select.hasAttribute('multiple') ? null : 1,
+            valueField: 'value',
+            labelField: 'label',
+            searchField: [],
+            sortField: [{field:'$order'},{field:'$score'}],
+            render: {
+                option_create: (data, escape) => `<div class="create">${this.data.get('message-add')} <strong>${escape(data.input)}</strong>&hellip;</div>`,
+                no_results: () => `<div class="no-results">${this.data.get('message-notfound')}</div>`,
+            },
+            onDelete: () => !! this.data.get('allow-empty'),
+            load: (query, callback) => this.search(query, callback),
+        });
+    }
+
+    /**
+     *
+     * @param search
+     * @param callback
+     */
+    search(search, callback) {
         const model = this.data.get('model');
         const name = this.data.get('name');
         const key = this.data.get('key');
@@ -19,87 +53,34 @@ export default class extends ApplicationController {
         const searchColumns = this.data.get('search-columns');
         const chunk = this.data.get('chunk');
 
+        axios.post(this.data.get('route'), {
+            search,
+            model,
+            name,
+            key,
+            scope,
+            append,
+            searchColumns,
+            chunk,
+        })
+            .then((response) => {
+                const options = [];
 
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr('content'),
-            },
-        });
+                Object.entries(response.data).forEach((entry) => {
+                    const [value, label] = entry;
 
-        const parent = $(select).closest(".dropdown-menu, div");
+                    options.push({ label, value });
+                });
 
-        $(select).select2({
-            theme: 'bootstrap',
-            allowClear: !select.hasAttribute('required'),
-            ajax: {
-                type: 'POST',
-                cache: true,
-                delay: 250,
-                url: () => this.data.get('route'),
-                dataType: 'json',
-                processResults: (data) => {
-                    let selectValues = $(select).val();
-                    selectValues = Array.isArray(selectValues) ? selectValues : [selectValues];
+                this.choices.clearOptions();
+                callback(options);
+            });
+    }
 
-                    return {
-                        results: Object.keys(data).reduce((res, id) => {
-                            if (selectValues.includes(id.toString())) {
-                                return res;
-                            }
-
-                            return [...res, {
-                                id,
-                                text: data[id],
-                            }];
-                        }, []),
-                    };
-                },
-                data: params => ({
-                    search: params.term,
-                    model,
-                    name,
-                    key,
-                    scope,
-                    append,
-                    searchColumns,
-                    chunk,
-                }),
-            },
-            placeholder: select.getAttribute('placeholder') || '',
-            dropdownParent: parent.length ? parent : undefined,
-        });
-
-        $(select).on('select2:open', () => {
-            window.setTimeout(function() {
-                $('.select2-container--open .select2-search__field').get(0).focus();
-            }, 200);
-        });
-
-        // force change event for https://github.com/select2/select2/issues/1908
-        let forceChange = () => setTimeout(() => {
-            select.dispatchEvent(new Event('change'));
-        }, 100);
-
-        $(select).on('select2:select', forceChange);
-        $(select).on('select2:unselect', forceChange);
-        $(select).on('select2:clear', forceChange);
-
-        if (!this.data.get('value')) {
-            return;
-        }
-
-        const values = JSON.parse(this.data.get('value'));
-
-        values.forEach((value) => {
-            $(select)
-                .append(new Option(value.text, value.id, true, true))
-                .trigger('change');
-        });
-
-        document.addEventListener('turbo:before-cache', () => {
-            if (typeof $(select) !== 'undefined') {
-                $(select).select2('destroy');
-            }
-        }, { once: true });
+    /**
+     *
+     */
+    disconnect() {
+        this.choices.destroy();
     }
 }

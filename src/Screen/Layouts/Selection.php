@@ -30,8 +30,6 @@ abstract class Selection extends Layout
     public $template = self::TEMPLATE_DROP_DOWN;
 
     /**
-     * @param Repository $repository
-     *
      * @return Factory|\Illuminate\View\View|mixed
      */
     public function build(Repository $repository)
@@ -42,9 +40,7 @@ abstract class Selection extends Layout
             return;
         }
 
-        $filters = collect($this->filters())->map(static function ($filter) {
-            return is_string($filter) ? resolve($filter) : $filter;
-        });
+        $filters = collect($this->filters())->map(static fn ($filter) => is_string($filter) ? resolve($filter) : $filter);
 
         $count = $filters->where('display', true)->count();
 

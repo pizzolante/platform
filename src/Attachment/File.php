@@ -48,18 +48,18 @@ class File
     protected $engine;
 
     /**
+     * @var bool
+     */
+    protected $duplicate = false;
+
+    /**
      * File constructor.
-     *
-     * @param UploadedFile $file
-     * @param string|null  $disk
-     * @param string|null  $group
      */
     public function __construct(UploadedFile $file, string $disk = null, string $group = null)
     {
         abort_if($file->getSize() === false, 415, 'File failed to load.');
 
         $this->file = $file;
-
         $this->disk = $disk ?? config('platform.attachment.disk', 'public');
         $this->storage = Storage::disk($this->disk);
 
@@ -71,15 +71,13 @@ class File
     }
 
     /**
+     * @throws \League\Flysystem\FilesystemException
+     *
      * @return Model|Attachment
      */
     public function load(): Model
     {
         $attachment = $this->getMatchesHash();
-
-        if (! $this->storage->has($this->engine->path())) {
-            $this->storage->makeDirectory($this->engine->path());
-        }
 
         if ($attachment === null) {
             return $this->save();
@@ -99,11 +97,22 @@ class File
         return $attachment;
     }
 
+    public function allowDuplicates(bool $status = true): self
+    {
+        $this->duplicate = $status;
+
+        return $this;
+    }
+
     /**
      * @return Attachment|null
      */
     private function getMatchesHash()
     {
+        if ($this->duplicate) {
+            return null;
+        }
+
         return Dashboard::model(Attachment::class)::where('hash', $this->engine->hash())
             ->where('disk', $this->disk)
             ->first();
@@ -134,5 +143,17 @@ class File
         event(new UploadFileEvent($attachment, $this->engine->time()));
 
         return $attachment;
+    }
+
+    /**
+     * set a custom Path
+     *
+     * @return File
+     */
+    public function path(?string $path = null)
+    {
+        $this->engine->setPath($path);
+
+        return $this;
     }
 }
