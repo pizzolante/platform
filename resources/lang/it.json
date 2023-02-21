@@ -129,12 +129,9 @@
     "Specify which groups this account should belong to": "Specifica a quale gruppo deve appartenere l'account",
     "Permission/Privilege": "Permessi/Privilegi",
     "Role display name": "Nome visualizzato del Ruolo",
-    "Documentation": "Documentazione",
     "Regular user": "Utente base",
-    "Details such as name, email and password": "Dettagli come nome, email e password"
-    "Role display name": "Nome visualizzzato del Ruolo",
+    "Details such as name, email and password": "Dettagli come nome, email e password",
     "Documentation": "Documentazione",
-    "Regular user": "Utente base",
     "Sign in with another user.": "Login come altro utente.",
     "User profile and privileges, including their associated role.": "Dettagli come nome, email e password",
     "You requested a page that doesn't exist.": "La pagina che hai richiesto non esiste.",
